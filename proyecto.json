@@ -1,0 +1,18 @@
+{
+    "nombre":"okex",
+    "plataformaPredeterminada":"linux",
+    "plataformas":[
+        {
+            "nombre":"linux",
+            "directorios":[
+                "src/okex/",
+                "src/main/"
+                ],
+            "includes":[
+              "include/",
+              "/usr/include/"
+            ]
+            
+        }
+   ]
+}
