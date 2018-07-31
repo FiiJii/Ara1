@@ -12,7 +12,7 @@ namespace okex{
            //Get the ticker for the symbol from_to
            //@param [in] from the coin used to pay
            //@param [in] to the buyed coin
-           Ticker get_ticker(Coins from,Coins to);
+           void listen_for_ticker(Coins from,Coins to);
         private:
            Poco::Net::HTTPSClientSession session;
 

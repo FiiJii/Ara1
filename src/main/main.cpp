@@ -8,8 +8,7 @@ int main(){
 
     try{
         auto start_time=std::chrono::high_resolution_clock::now();
-        auto ticker=api.get_ticker(okex::Coins::ltc,okex::Coins::btc);
-        ticker=api.get_ticker(okex::Coins::ltc,okex::Coins::btc);
+        api.listen_for_ticker(okex::Coins::ltc,okex::Coins::btc);
         auto end_time=std::chrono::high_resolution_clock::now();
         std::cout<<std::chrono::duration_cast<std::chrono::milliseconds>(end_time-start_time).count()<<std::endl;
     }catch(std::string e){
