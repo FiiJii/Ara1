@@ -4,18 +4,41 @@
 #include "ticker.hpp"
 #include "coins.hpp"
 #include "Poco/JSON/Parser.h"
+#include "Poco/Net/WebSocket.h"
 #include "Poco/Net/Net.h"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTTPResponse.h"
 #include "Poco/StreamCopier.h"
+#include <iostream>
 
 using namespace Poco;
 namespace okex{
-    Ticker Api::get_ticker(Coins from,Coins to){
-        std::string endpoint="/api/v1/ticker.do?symbol="+coin_name(from)+"_"+coin_name(to);
-        Net::HTTPRequest request(Net::HTTPRequest::HTTP_GET,endpoint);
-        session.sendRequest(request);
+    Ticker Api::get_ticker(Coins from,Coins to){    
+        
+        std::string endpoint="/";
+        Net::HTTPRequest request(Net::HTTPRequest::HTTP_GET,endpoint,Net::HTTPRequest::HTTP_1_1);
+        Net::HTTPResponse response;
+        try{
+            auto socket=Poco::Net::WebSocket(session,request,response);
+            std::string channel="{'event':'addChannel','channel':'ok_sub_spot_ltc_btc_ticker'}";
+            auto sent_bytes=socket.sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
+            Poco::Buffer<char> buffer(100);
+            while(true){
+                int flags=0;
+                int received_bytes=socket.receiveFrame(buffer,flags);
+                for(auto b:buffer){
+                    std::cout<<b;
+                }
+                std::cout<<"\n"<<std::flush;
+                buffer.clear();
+            }
+        }catch(std::exception e){
+            std::cerr<<e.what()<<std::endl;
+        }
+
+
+        /*session.sendRequest(request);
         Net::HTTPResponse response;
         std::istream& response_body=session.receiveResponse(response);
         JSON::Parser parser;
@@ -36,12 +59,15 @@ namespace okex{
             .low =ticker_node->optValue<double>("low",0),
             .sell=ticker_node->optValue<double>("sell",0),
             .vol =ticker_node->optValue<double>("vol",0),
-        };
+        };*/
+        Ticker ticker;
         return ticker;
 
     } 
     Api::Api():
-     session("www.okex.com"){
+     session("real.okex.com",10441){
+
+
 
     }
 }
