@@ -5,6 +5,7 @@
 #include "ticker.hpp"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/WebSocket.h"
+
 namespace okex{
     class Api{
         public:

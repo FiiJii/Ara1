@@ -8576,7 +8576,7 @@ boundaries compute_boundaries(FloatType value)
     static_assert(std::numeric_limits<FloatType>::is_iec559,
                   "internal error: dtoa_short requires an IEEE-754 floating-point implementation");
 
-    constexpr int      kPrecision = std::numeric_limits<FloatType>::digits; // = p (includes the hidden bit)
+    constexpr int      kPrecision = std::numeric_limits<FloatType>::digits; // = p (include the hidden bit)
     constexpr int      kBias      = std::numeric_limits<FloatType>::max_exponent - 1 + (kPrecision - 1);
     constexpr int      kMinExp    = 1 - kBias;
     constexpr uint64_t kHiddenBit = uint64_t{1} << (kPrecision - 1); // = 2^(p-1)
