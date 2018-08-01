@@ -1,6 +1,4 @@
 #include "api.hpp"
-
-
 #include "ticker.hpp"
 #include "coins.hpp"
 #include "Poco/JSON/Parser.h"
@@ -25,38 +23,44 @@ namespace okex{
              
             std::string channel="{'event':'addChannel','channel':'ok_sub_spot_ltc_btc_ticker'}";
             auto sent_bytes=socket.sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
-            Poco::Buffer<char> buffer(100);
+            Poco::Buffer<char> buffer(1);
+
             while(true){
                     int flags=0;
                     int received_bytes=socket.receiveFrame(buffer,flags);
                     for(auto b:buffer){
                         stringbuff<<b;
+                        std::cout<<b;
                     }
                     JSON::Parser parser;
                     std::cout<<stringbuff.str()<<std::endl;
 
-                    buffer.clear();
-                    stringbuff.str(std::string());
-                    /*auto rootVar=parser.parse(stringbuff);
-                    auto root=rootVar.extract<JSON::Object::Ptr>();
-                    if(!root->has("ticker")){
-                        std::cout<<"failed querying:"<<endpoint<<std::endl;
-                        root->stringify(std::cout);
-                        continue;
+                    try{
+                        auto rootVar=parser.parse(stringbuff);
+                        auto root=rootVar.extract<JSON::Object::Ptr>();
+                        if(!root->has("ticker")){
+                            std::cout<<"failed querying:"<<endpoint<<std::endl;
+                            root->stringify(std::cout);
+                        }
+                        auto ticker_node=root->getObject("ticker");
+                        Ticker ticker{
+                            .from=from,
+                            .to=to,
+                            .buy =ticker_node->optValue<double>("buy",0),
+                            .high=ticker_node->optValue<double>("high",0),
+                            .last=ticker_node->optValue<double>("last",0),
+                            .low =ticker_node->optValue<double>("low",0),
+                            .sell=ticker_node->optValue<double>("sell",0),
+                            .vol =ticker_node->optValue<double>("vol",0),
+                        };
+                        std::cout<<"buy:"<<ticker.buy<<std::endl;
+                        buffer.clear();
+                    }catch(std::exception& e){
+                        std::cerr<<e.what()<<std::endl;
+                        buffer.clear();
+                        stringbuff.str("");
+                        stringbuff.clear();
                     }
-                    auto ticker_node=root->getObject("ticker");
-                    Ticker ticker{
-                        .from=from,
-                        .to=to,
-                        .buy =ticker_node->optValue<double>("buy",0),
-                        .high=ticker_node->optValue<double>("high",0),
-                        .last=ticker_node->optValue<double>("last",0),
-                        .low =ticker_node->optValue<double>("low",0),
-                        .sell=ticker_node->optValue<double>("sell",0),
-                        .vol =ticker_node->optValue<double>("vol",0),
-                    };
-                    std::cout<<"buy:"<<ticker.buy<<std::endl;
-                    buffer.clear();*/
 
         }
 
