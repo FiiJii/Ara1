@@ -11,5 +11,6 @@ namespace okex{
     };
 
     std::string coin_name(Coins coin);
+    Coins coin_value(std::string name);
 }
 #endif

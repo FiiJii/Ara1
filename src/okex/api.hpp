@@ -5,7 +5,8 @@
 #include "ticker.hpp"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/WebSocket.h"
-
+#include <functional>
+#include <memory>
 namespace okex{
     class Api{
         public:
@@ -13,9 +14,11 @@ namespace okex{
            //Get the ticker for the symbol from_to
            //@param [in] from the coin used to pay
            //@param [in] to the buyed coin
-           void listen_for_ticker(Coins from,Coins to);
+           void register_for_ticker(Coins from,Coins to);
+           void listen(std::function<void(Ticker)> callback); 
         private:
-           Poco::Net::HTTPSClientSession session;
+           std::unique_ptr<Poco::Net::WebSocket> socket;
+           void connect();
 
     };
 }
