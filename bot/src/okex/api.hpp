@@ -2,7 +2,7 @@
 #define _OKEX_API_HPP_
 #include <string_view>
 #include "coins.hpp"
-#include "ticker.hpp"
+#include "../trading/ticker.hpp"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Net/WebSocket.h"
 #include <functional>
