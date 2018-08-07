@@ -2,7 +2,7 @@
 #define _OKEX_TICKER_HPP_
 #include "coins.hpp"
 #include "nlohmann/json.hpp"
-namespace okex{
+namespace trading{
     class Ticker{
         public:
             Coins from;

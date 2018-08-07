@@ -1,5 +1,5 @@
 #include "coins.hpp"
-namespace okex{
+namespace trading{
     std::string coin_name(Coins coin){
         std::map<Coins,std::string> coin_names{{btc,"btc"},{ltc,"ltc"},{usd,"usdt"},{eth,"eth"}};
 

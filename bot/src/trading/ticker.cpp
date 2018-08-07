@@ -1,7 +1,7 @@
 #include "ticker.hpp"
 #include "nlohmann/json.hpp"
 #include <string>
-namespace okex{
+namespace trading{
     void to_json(nlohmann::json& j, const Ticker& ticker) {
         j = nlohmann::json{
             {"from",coin_name(ticker.from)},

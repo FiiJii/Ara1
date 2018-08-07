@@ -1,5 +1,7 @@
+
+
 #include "api.hpp"
-#include "ticker.hpp"
+#include "../trading/ticker.hpp"
 #include "coins.hpp"
 #include <functional>
 #include "Poco/JSON/Parser.h"
@@ -16,7 +18,7 @@
 
 
 using namespace Poco;
-namespace okex{
+namespace trading{
     void Api::register_for_ticker(Coins from,Coins to){    
         std::string channel="{'event':'addChannel','channel':'ok_sub_spot_"+coin_name(from)+"_"+coin_name(to)+"_ticker'}";
         auto sent_bytes=socket->sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
@@ -51,7 +53,7 @@ namespace okex{
         }
     } 
     void Api::connect(){
-        Poco::Net::HTTPSClientSession session("real.okex.com",10441);
+        Poco::Net::HTTPSClientSession session("real.trading.com",10441);
 
         std::string endpoint="/";
         Net::HTTPRequest request(Net::HTTPRequest::HTTP_GET,endpoint,Net::HTTPRequest::HTTP_1_1);

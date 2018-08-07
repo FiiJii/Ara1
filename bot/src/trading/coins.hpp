@@ -2,7 +2,7 @@
 #define _OKEX_COINS_HPP_
 #include <string>
 #include <map>
-namespace okex{
+namespace trading{
      enum Coins{
         btc,
         ltc,

@@ -6,7 +6,8 @@
             "nombre":"linux",
             "directorios":[
                 "src/okex/",
-                "src/main/"
+                "src/main/",
+                "src/trading/"
                 ],
             "includes":[
               "include/",
