@@ -15,7 +15,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'g0gtp_(xny8@!+jj8!a1-qx$it71@-f@1y6rz&t8+(qcva+#p('
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'transactions',
 ]
 
 MIDDLEWARE = [
@@ -70,11 +72,11 @@ WSGI_APPLICATION = 'api_trading.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'trading_db',
-        'USER': 'trading_user',
-        'HOST': 'localhost',
-        'PASSWORD': 'trading'
+        'ENGINE': os.environ.get('ENGINE_DB'),
+        'NAME': os.environ.get('NAME_DB'),
+        'USER': os.environ.get('USER_DB'),
+        'HOST': os.environ.get('HOST_DB'),
+        'PASSWORD': os.environ.get('PASSWORD_DB')
     }
 }
 
