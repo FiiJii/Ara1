@@ -3,4 +3,5 @@ djangorestframework
 psycopg2
 python-dotenv
 django-filter
+djangorestframework_simplejwt
 
