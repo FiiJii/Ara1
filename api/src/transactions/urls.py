@@ -3,7 +3,7 @@ from rest_framework import routers
 from transactions import views
 
 router = routers.DefaultRouter()
-router.register(r'transactions', views.TransactionList)
+router.register(r'transactions', views.Transaction)
 router.register(r'transaction_details', views.TransactionDetail)
 
 urlpatterns = [

@@ -11,8 +11,8 @@ class TransactionFilter(filters.FilterSet):
             'creation_date': ['iexact', 'lte', 'gte']
         }
 
-class TransactionList(viewsets.ModelViewSet):
-    queryset = Transaction.objects.all()
+class Transaction(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all().order_by('-creation_date')
     serializer_class = TransactionSerializer
     filterset_class = TransactionFilter
   
