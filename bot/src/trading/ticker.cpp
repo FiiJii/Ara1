@@ -18,9 +18,10 @@ namespace trading{
             auto d=j["data"];
             std::string symbol=j["channel"];
             symbol.erase(0,12);
-            symbol.erase(7,7); 
-            ticker.from=coin_value(symbol.substr(0,3));
-            ticker.to=coin_value(symbol.substr(4,3));
+            symbol.erase(symbol.length()-7,7);
+            auto separator_pos=symbol.find('_');
+            ticker.from=coin_value(symbol.substr(separator_pos+1,symbol.length()-separator_pos));
+            ticker.to=coin_value(symbol.substr(0,separator_pos));
             ticker.buy =std::stod(d.at("buy").get<std::string>());
             ticker.high =std::stod(d.at("high").get<std::string>());
             ticker.last =std::stod(d.at("last").get<std::string>());
