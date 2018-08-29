@@ -18,12 +18,12 @@
 
 
 using namespace Poco;
-namespace trading{
-    void Api::register_for_ticker(Coins from,Coins to){    
-        std::string channel="{'event':'addChannel','channel':'ok_sub_spot_"+coin_name(from)+"_"+coin_name(to)+"_ticker'}";
+namespace okex{
+    void Api::register_for_ticker(trading::Coins from,trading::Coins to){
+        std::string channel="{'event':'addChannel','channel':'ok_sub_spot_"+coin_name(to)+"_"+coin_name(from)+"_ticker'}";
         auto sent_bytes=socket->sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
     }
-    void Api::listen(std::function<void(Ticker)> callback){
+    void Api::listen(std::function<void(trading::Ticker)> callback){
             char buffer[1000];
             std::stringstream stringbuff;
             while(true){
@@ -37,7 +37,7 @@ namespace trading{
                         stringbuff>>root_node;
                         for(auto node:root_node){
                             auto ticker_node=node;
-                            Ticker ticker=ticker_node;
+                            trading::Ticker ticker=ticker_node;
                             callback(ticker);
                         }
                         stringbuff.str("");
@@ -53,7 +53,7 @@ namespace trading{
         }
     } 
     void Api::connect(){
-        Poco::Net::HTTPSClientSession session("real.trading.com",10441);
+        Poco::Net::HTTPSClientSession session("real.okex.com",10441);
 
         std::string endpoint="/";
         Net::HTTPRequest request(Net::HTTPRequest::HTTP_GET,endpoint,Net::HTTPRequest::HTTP_1_1);

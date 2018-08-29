@@ -14,8 +14,8 @@ namespace okex{
            //Get the ticker for the symbol from_to
            //@param [in] from the coin used to pay
            //@param [in] to the buyed coin
-           void register_for_ticker(Coins from,Coins to);
-           void listen(std::function<void(Ticker)> callback); 
+           void register_for_ticker(trading::Coins from,trading::Coins to);
+           void listen(std::function<void(trading::Ticker)> callback);
         private:
            std::unique_ptr<Poco::Net::WebSocket> socket;
            void connect();
