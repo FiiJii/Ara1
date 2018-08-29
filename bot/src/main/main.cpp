@@ -45,11 +45,9 @@ void register_db(std::vector<trading::Coins> path){
 }
 int main() {
     okex::Api api;
+    bool running=true;
     trading::rest::api api_rest("localhost",8000);
     auto res=api_rest.login("trading_bot","trading");
-    if(res)
-        std::cout<<"resultado:"<<res->code<<";"<<res->message<<"\n";
-    return 0;
     try {
         auto start_time = std::chrono::high_resolution_clock::now();
         api.register_for_ticker(trading::Coins::btc, trading::Coins::ltc);
@@ -75,11 +73,11 @@ int main() {
 
         }
         );
-        std::thread search_thread([&graph,&graph_mutex] {
+        std::thread search_thread([&running,&graph,&graph_mutex] {
                 std::vector<std::vector<trading::Coins>> paths;
                 paths.push_back({trading::Coins::usd,trading::Coins ::btc,trading::Coins::ltc,trading::Coins::usd});
                 paths.push_back({trading::Coins::usd,trading::Coins ::ltc,trading::Coins::btc,trading::Coins::usd});
-                while(true) {
+                while(running) {
                     graph_mutex.lock();
                     double initial_invest = 10000;
                     double max_path_gain = 0;

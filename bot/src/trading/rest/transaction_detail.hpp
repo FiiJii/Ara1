@@ -6,6 +6,7 @@
 #define TRADING_TRANSACTION_DETAIL_HPP
 
 #include <string>
+#include <api.hpp>
 #include "transaction.hpp"
 
 namespace  trading::rest {
@@ -13,10 +14,12 @@ namespace  trading::rest {
         public:
             int id;
             Transaction transaction;
-            std::string parity;
+            Coins from;
+            Coins to;
             double fee;
             double price;
             double amount;
+            int okex_oder;
     };
 }
 
