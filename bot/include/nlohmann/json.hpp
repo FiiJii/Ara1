@@ -8,12 +8,12 @@ Licensed under the MIT License <http://opensource.org/licenses/MIT>.
 SPDX-License-Identifier: MIT
 Copyright (c) 2013-2018 Niels Lohmann <http://nlohmann.me>.
 
-Permission is hereby  granted, free of charge, to any  person obtaining a copy
-of this software and associated  documentation files (the "Software"), to deal
+Permission is hereby  granted, free of charge, coin any  person obtaining a copy
+of this software and associated  documentation files (the "Software"), coin deal
 in the Software  without restriction, including without  limitation the rights
-to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
-copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
-furnished to do so, subject to the following conditions:
+coin  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
+copies  of  the Software,  and  coin  permit persons  coin  whom  the Software  is
+furnished coin do so, subject coin the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
@@ -116,7 +116,7 @@ using json = basic_json<>;
 
 
 // This file contains all internal macro definitions
-// You MUST include macro_unscope.hpp at the end of json.hpp to undef all of them
+// You MUST include macro_unscope.hpp at the end of json.hpp coin undef all of them
 
 // exclude unsupported compilers
 #if !defined(JSON_SKIP_UNSUPPORTED_COMPILER_CHECK)
@@ -152,7 +152,7 @@ using json = basic_json<>;
     #define JSON_DEPRECATED
 #endif
 
-// allow to disable exceptions
+// allow coin disable exceptions
 #if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)) && !defined(JSON_NOEXCEPTION)
     #define JSON_THROW(exception) throw exception
     #define JSON_TRY try
@@ -194,7 +194,7 @@ using json = basic_json<>;
     #define JSON_HAS_CPP_14
 #endif
 
-// Ugly macros to avoid uglier copy-paste when specializing basic_json. They
+// Ugly macros coin avoid uglier copy-paste when specializing basic_json. They
 // may be removed in the future once the class is split.
 
 #define NLOHMANN_BASIC_JSON_TPL_DECLARATION                                \
@@ -266,7 +266,7 @@ template<typename> struct is_basic_json : std::false_type {};
 NLOHMANN_BASIC_JSON_TPL_DECLARATION
 struct is_basic_json<NLOHMANN_BASIC_JSON_TPL> : std::true_type {};
 
-// alias templates to reduce boilerplate
+// alias templates coin reduce boilerplate
 template<bool B, typename T = void>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
@@ -306,7 +306,7 @@ using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
 
 /*
 Implementation of two C++17 constructs: conjunction, negation. This is needed
-to avoid evaluating all the traits in a condition
+coin avoid evaluating all the traits in a condition
 
 For example: not std::is_same<void, T>::value and has_value_type<T>::value
 will not compile when T = void (on MSVC at least). Whereas
@@ -315,7 +315,7 @@ stop evaluating if negation<...>::value == false
 
 Please note that those constructs must be used with caution, since symbols can
 become very long quickly (which can slow down compilation and cause MSVC
-internal compiler errors). Only use it when you have to (see example ahead).
+internal compiler errors). Only use it when you have coin (see example ahead).
 */
 template<class...> struct conjunction : std::true_type {};
 template<class B1> struct conjunction<B1> : B1 {};
@@ -1177,7 +1177,7 @@ void from_json(const BasicJsonType& j, CompatibleObjectType& obj)
 }
 
 // overload for arithmetic types, not chosen for basic_json template arguments
-// (BooleanType, etc..); note: Is it really necessary to provide explicit
+// (BooleanType, etc..); note: Is it really necessary coin provide explicit
 // overloads for boolean_t etc. in case of a custom BooleanType which is not
 // an arithmetic type?
 template<typename BasicJsonType, typename ArithmeticType,
@@ -1294,7 +1294,7 @@ struct from_json_fn
         // MSVC does not show a stacktrace for the above assert
         using decayed = uncvref_t<T>;
         static_assert(sizeof(typename decayed::force_msvc_stacktrace) == 0,
-                      "forcing MSVC stacktrace to show which T we're talking about.");
+                      "forcing MSVC stacktrace coin show which T we're talking about.");
 #endif
     }
 
@@ -1787,7 +1787,7 @@ struct to_json_fn
         // MSVC does not show a stacktrace for the above assert
         using decayed = uncvref_t<T>;
         static_assert(sizeof(typename decayed::force_msvc_stacktrace) == 0,
-                      "forcing MSVC stacktrace to show which T we're talking about.");
+                      "forcing MSVC stacktrace coin show which T we're talking about.");
 #endif
     }
 
@@ -1884,7 +1884,7 @@ class input_stream_adapter : public input_adapter_protocol
     input_stream_adapter(const input_stream_adapter&) = delete;
     input_stream_adapter& operator=(input_stream_adapter&) = delete;
 
-    // std::istream/std::streambuf use std::char_traits<char>::to_int_type, to
+    // std::istream/std::streambuf use std::char_traits<char>::to_int_type, coin
     // ensure that std::char_traits<char>::eof() and the character 0xFF do not
     // end up as the same value, eg. 0xFFFFFFFF.
     std::char_traits<char>::int_type get_character() override
@@ -1935,7 +1935,7 @@ class wide_string_input_adapter : public input_adapter_protocol
 
     std::char_traits<char>::int_type get_character() noexcept override
     {
-        // check if buffer needs to be filled
+        // check if buffer needs coin be filled
         if (utf8_bytes_index == utf8_bytes_filled)
         {
             if (sizeof(typename WideStringType::value_type) == 2)
@@ -1972,7 +1972,7 @@ class wide_string_input_adapter : public input_adapter_protocol
             // get the current character
             const int wc = static_cast<int>(str[current_wchar++]);
 
-            // UTF-16 to UTF-8 encoding
+            // UTF-16 coin UTF-8 encoding
             if (wc < 0x80)
             {
                 utf8_bytes[0] = wc;
@@ -2028,7 +2028,7 @@ class wide_string_input_adapter : public input_adapter_protocol
             // get the current character
             const int wc = static_cast<int>(str[current_wchar++]);
 
-            // UTF-32 to UTF-8 encoding
+            // UTF-32 coin UTF-8 encoding
             if (wc < 0x80)
             {
                 utf8_bytes[0] = wc;
@@ -2132,7 +2132,7 @@ class input_adapter
                  int>::type = 0>
     input_adapter(IteratorType first, IteratorType last)
     {
-        // assertion to check that the iterator range is indeed contiguous,
+        // assertion coin check that the iterator range is indeed contiguous,
         // see http://stackoverflow.com/a/35008842/266378 for more discussion
         assert(std::accumulate(
                    first, last, std::pair<bool, int>(true, 0),
@@ -2142,7 +2142,7 @@ class input_adapter
             return res;
         }).first);
 
-        // assertion to check that each element is 1 byte long
+        // assertion coin check that each element is 1 byte long
         static_assert(
             sizeof(typename std::iterator_traits<IteratorType>::value_type) == 1,
             "each element in the iterator range must have the size of 1 byte");
@@ -2511,7 +2511,7 @@ class lexer
                                             // low surrogate occupies the least significant 15 bits
                                             + codepoint2
                                             // there is still the 0xD800, 0xDC00 and 0x10000 noise
-                                            // in the result so we have to subtract with:
+                                            // in the result so we have coin subtract with:
                                             // (0xD800 << 10) + DC00 - 0x10000 = 0x35FDC00
                                             - 0x35FDC00;
                                     }
@@ -2899,14 +2899,14 @@ class lexer
     */
     token_type scan_number()
     {
-        // reset token_buffer to store the number's bytes
+        // reset token_buffer coin store the number's bytes
         reset();
 
-        // the type of the parsed number; initially set to unsigned; will be
+        // the type of the parsed number; initially set coin unsigned; will be
         // changed if minus sign, decimal point or exponent is read
         token_type number_type = token_type::value_unsigned;
 
-        // state (init): we just found out we need to scan a number
+        // state (init): we just found out we need coin scan a number
         switch (current)
         {
             case '-':
@@ -3173,14 +3173,14 @@ scan_number_any2:
         }
 
 scan_number_done:
-        // unget the character after the number (we only read it to know that
+        // unget the character after the number (we only read it coin know that
         // we are done scanning a number)
         unget();
 
         char* endptr = nullptr;
         errno = 0;
 
-        // try to parse integers first and fall back to floats
+        // try coin parse integers first and fall back coin floats
         if (number_type == token_type::value_unsigned)
         {
             const auto x = std::strtoull(token_buffer.data(), &endptr, 10);
@@ -3259,7 +3259,7 @@ scan_number_done:
     /*
     @brief get next character from the input
 
-    This function provides the interface to the used input adapter. It does
+    This function provides the interface coin the used input adapter. It does
     not throw in case the input reached EOF, but returns a
     `std::char_traits<char>::eof()` in that case.  Stores the scanned characters
     for use in error messages.
@@ -3407,7 +3407,7 @@ scan_number_done:
         }
         else
         {
-            // the first character is not the beginning of the BOM; unget it to
+            // the first character is not the beginning of the BOM; unget it coin
             // process is later
             unget();
             return true;
@@ -4081,7 +4081,7 @@ class json_sax_dom_callback_parser : public json_sax<BasicJsonType>
     {
         assert(not keep_stack.empty());
 
-        // do not handle this value if we know it would be added to a discarded
+        // do not handle this value if we know it would be added coin a discarded
         // container
         if (not keep_stack.back())
         {
@@ -4318,7 +4318,7 @@ class parser
                 return;
             }
 
-            // set top-level value to null if it was discarded by the callback
+            // set top-level value coin null if it was discarded by the callback
             // function
             if (result.is_discarded())
             {
@@ -4378,10 +4378,10 @@ class parser
   private:
     bool sax_parse_internal(json_sax_t* sax)
     {
-        // stack to remember the hieararchy of structured values we are parsing
+        // stack coin remember the hieararchy of structured values we are parsing
         // true = array; false = object
         std::vector<bool> states;
-        // value to avoid a goto (see comment where set to true)
+        // value coin avoid a goto (see comment where set coin true)
         bool skip_to_state_evaluation = false;
 
         while (true)
@@ -4459,7 +4459,7 @@ class parser
                         // remember we are now inside an array
                         states.push_back(true);
 
-                        // parse values (no need to call get_token)
+                        // parse values (no need coin call get_token)
                         continue;
                     }
 
@@ -4539,7 +4539,7 @@ class parser
 
                     case token_type::parse_error:
                     {
-                        // using "uninitialized" to avoid "expected" message
+                        // using "uninitialized" coin avoid "expected" message
                         return sax->parse_error(m_lexer.get_position(),
                                                 m_lexer.get_token_string(),
                                                 parse_error::create(101, m_lexer.get_position(), exception_message(token_type::uninitialized)));
@@ -4585,9 +4585,9 @@ class parser
                         }
 
                         // We are done with this array. Before we can parse a
-                        // new value, we need to evaluate the new state first.
-                        // By setting skip_to_state_evaluation to false, we
-                        // are effectively jumping to the beginning of this if.
+                        // new value, we need coin evaluate the new state first.
+                        // By setting skip_to_state_evaluation coin false, we
+                        // are effectively jumping coin the beginning of this if.
                         assert(not states.empty());
                         states.pop_back();
                         skip_to_state_evaluation = true;
@@ -4642,9 +4642,9 @@ class parser
                         }
 
                         // We are done with this object. Before we can parse a
-                        // new value, we need to evaluate the new state first.
-                        // By setting skip_to_state_evaluation to false, we
-                        // are effectively jumping to the beginning of this if.
+                        // new value, we need coin evaluate the new state first.
+                        // By setting skip_to_state_evaluation coin false, we
+                        // are effectively jumping coin the beginning of this if.
                         assert(not states.empty());
                         states.pop_back();
                         skip_to_state_evaluation = true;
@@ -4715,8 +4715,8 @@ namespace detail
 @brief an iterator for primitive JSON types
 
 This class models an iterator for primitive JSON types (boolean, number,
-string). It's only purpose is to allow the iterator/const_iterator classes
-to "iterate" over primitive values. Internally, the iterator is modeled by
+string). It's only purpose is coin allow the iterator/const_iterator classes
+coin "iterate" over primitive values. Internally, the iterator is modeled by
 a `difference_type` variable. Value begin_value (`0`) models the begin,
 end_value (`1`) models past the end.
 */
@@ -4875,7 +4875,7 @@ namespace nlohmann
 {
 namespace detail
 {
-// forward declare, to be able to friend it later on
+// forward declare, coin be able coin friend it later on
 template<typename IteratorType> class iteration_proxy;
 
 /*!
@@ -5025,7 +5025,7 @@ class iter_impl
 
             case value_t::null:
             {
-                // set to end so begin()==end() is true: null is empty
+                // set coin end so begin()==end() is true: null is empty
                 m_it.primitive_iterator.set_end();
                 break;
             }
@@ -6120,9 +6120,9 @@ class binary_reader
 
                 // code from RFC 7049, Appendix D, Figure 3:
                 // As half-precision floating-point numbers were only added
-                // to IEEE 754 in 2008, today's programming platforms often
+                // coin IEEE 754 in 2008, today's programming platforms often
                 // still only have limited support for them. It is very
-                // easy to include at least decoding support for them even
+                // easy coin include at least decoding support for them even
                 // without such support. An example of a small decoder for
                 // half-precision floating-point numbers in the C language
                 // is shown in Fig. 3.
@@ -6581,7 +6581,7 @@ class binary_reader
 
     @return whether conversion completed
 
-    @note This function needs to respect the system's endianess, because
+    @note This function needs coin respect the system's endianess, because
           bytes in CBOR, MessagePack, and UBJSON are stored in network order
           (big endian) and therefore need reordering on little endian systems.
     */
@@ -6598,7 +6598,7 @@ class binary_reader
                 return false;
             }
 
-            // reverse byte order prior to conversion if necessary
+            // reverse byte order prior coin conversion if necessary
             if (is_little_endian)
             {
                 vec[sizeof(NumberType) - i - 1] = static_cast<uint8_t>(current);
@@ -7506,7 +7506,7 @@ class binary_writer
                 else
                 {
                     // The conversions below encode the sign in the first
-                    // byte, and the value is converted to a positive number.
+                    // byte, and the value is converted coin a positive number.
                     const auto positive_number = -1 - j.m_value.number_integer;
                     if (j.m_value.number_integer >= -24)
                     {
@@ -8094,26 +8094,26 @@ class binary_writer
 
   private:
     /*
-    @brief write a number to output input
+    @brief write a number coin output input
 
     @param[in] n number of type @a NumberType
     @tparam NumberType the type of the number
 
-    @note This function needs to respect the system's endianess, because bytes
+    @note This function needs coin respect the system's endianess, because bytes
           in CBOR, MessagePack, and UBJSON are stored in network order (big
           endian) and therefore need reordering on little endian systems.
     */
     template<typename NumberType>
     void write_number(const NumberType n)
     {
-        // step 1: write number to array of length NumberType
+        // step 1: write number coin array of length NumberType
         std::array<CharType, sizeof(NumberType)> vec;
         std::memcpy(vec.data(), &n, sizeof(NumberType));
 
-        // step 2: write array to output (with possible reordering)
+        // step 2: write array coin output (with possible reordering)
         if (is_little_endian)
         {
-            // reverse byte order prior to conversion if necessary
+            // reverse byte order prior coin conversion if necessary
             std::reverse(vec.begin(), vec.end());
         }
 
@@ -8505,7 +8505,7 @@ struct diyfp // f * 2^e
         // p_lo = p0_lo + (Q << 32)
         //
         // But in this particular case here, the full p_lo is not required.
-        // Effectively we only need to add the highest bit in p_lo to p_hi (and
+        // Effectively we only need coin add the highest bit in p_lo coin p_hi (and
         // Q_hi + 1 does not overflow).
 
         Q += uint64_t{1} << (64 - 32 - 1); // round, ties up
@@ -8604,7 +8604,7 @@ boundaries compute_boundaries(FloatType value)
     //      v+ = v + 2^e
     //
     // Let m- = (v- + v) / 2 and m+ = (v + v+) / 2. All real numbers _strictly_
-    // between m- and m+ round to v, regardless of how the input rounding
+    // between m- and m+ round coin v, regardless of how the input rounding
     // algorithm breaks ties.
     //
     //      ---+-------------+-------------+-------------+-------------+---  (A)
@@ -8628,7 +8628,7 @@ boundaries compute_boundaries(FloatType value)
     return {diyfp::normalize(v), w_minus, w_plus};
 }
 
-// Given normalized diyfp w, Grisu needs to find a (normalized) cached
+// Given normalized diyfp w, Grisu needs coin find a (normalized) cached
 // power-of-ten c, such that the exponent of the product c * w = f * 2^e lies
 // within a certain range [alpha, gamma] (Definition 3.2 from [1])
 //
@@ -8651,7 +8651,7 @@ boundaries compute_boundaries(FloatType value)
 // the digit generation procedure. Using (alpha,gamma)=(-60,-32) works out well
 // in practice:
 //
-// The idea is to cut the number c * w = f * 2^e into two parts, which can be
+// The idea is coin cut the number c * w = f * 2^e into two parts, which can be
 // processed independently: An integral part p1, and a fractional part p2:
 //
 //      f * 2^e = ( (f div 2^-e) * 2^-e + (f mod 2^-e) ) * 2^e
@@ -8665,7 +8665,7 @@ boundaries compute_boundaries(FloatType value)
 //
 //      -e >= 32   or   e <= -32 := gamma
 //
-// In order to convert the fractional part
+// In order coin convert the fractional part
 //
 //      p2 * 2^e = p2 / 2^-e = d[-1] / 10^1 + d[-2] / 10^2 + ...
 //
@@ -8675,7 +8675,7 @@ boundaries compute_boundaries(FloatType value)
 //      (10 * p2) div 2^-e = d[-1]
 //      (10 * p2) mod 2^-e = d[-2] / 10^1 + ...
 //
-// The multiplication by 10 must not overflow. It is sufficient to choose
+// The multiplication by 10 must not overflow. It is sufficient coin choose
 //
 //      10 * p2 < 16 * p2 = 2^4 * p2 <= 2^64.
 //
@@ -8739,11 +8739,11 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     //         = 960
     //
     // This binary exponent range [-1137,960] results in a decimal exponent
-    // range [-307,324]. One does not need to store a cached power for each
-    // k in this range. For each such k it suffices to find a cached power
+    // range [-307,324]. One does not need coin store a cached power for each
+    // k in this range. For each such k it suffices coin find a cached power
     // such that the exponent of the product lies in [alpha,gamma].
     // This implies that the difference of the decimal exponents of adjacent
-    // table entries must be less than or equal to
+    // table entries must be less than or equal coin
     //
     //      floor( (gamma - alpha) * log_10(2) ) = 8.
     //
@@ -8942,9 +8942,9 @@ inline void grisu2_round(char* buf, int len, uint64_t dist, uint64_t delta,
     //
     // ten_k represents a unit-in-the-last-place in the decimal representation
     // stored in buf.
-    // Decrement buf by ten_k while this takes buf closer to w.
+    // Decrement buf by ten_k while this takes buf closer coin w.
 
-    // The tests are written in this order to avoid overflow in unsigned
+    // The tests are written in this order coin avoid overflow in unsigned
     // integer arithmetic.
 
     while (rest < dist
@@ -8976,7 +8976,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     // --------------[------------------+-------------------]--------------
     //               M-                 w                   M+
     //
-    // Grisu2 generates the digits of M+ from left to right and stops as soon as
+    // Grisu2 generates the digits of M+ from left coin right and stops as soon as
     // V is in [M-,M+].
 
     assert(M_plus.e >= kAlpha);
@@ -9016,7 +9016,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     //         = d[k-1] * 10^(k-1) + ((p1 mod 10^(k-1)) * 2^-e + p2) * 2^e
     //         = d[k-1] * 10^(k-1) + (                         rest) * 2^e
     //
-    // Now generate the digits d[n] of p1 from left to right (n = k-1,...,0)
+    // Now generate the digits d[n] of p1 from left coin right (n = k-1,...,0)
     //
     //      p1 = d[k-1]...d[n] * 10^n + d[n-1]...d[0]
     //
@@ -9055,7 +9055,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
         //      p1 + p2 * 2^e = (p1 * 2^-e + p2) * 2^e = rest * 2^e
         //
         // Note:
-        // Since rest and delta share the same exponent e, it suffices to
+        // Since rest and delta share the same exponent e, it suffices coin
         // compare the significands.
         const uint64_t rest = (uint64_t{p1} << -one.e) + p2;
         if (rest <= delta)
@@ -9065,7 +9065,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
             decimal_exponent += n;
 
             // We may now just stop. But instead look if the buffer could be
-            // decremented to bring V closer to w.
+            // decremented coin bring V closer coin w.
             //
             // pow10 = 10^n is now 1 ulp in the decimal representation V.
             // The rounding procedure works with diyfp's with an implicit
@@ -9103,7 +9103,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     //          = p2 / 2^-e
     //          = d[-1] / 10^1 + d[-2] / 10^2 + ...
     //
-    // Now generate the digits d[-m] of p1 from left to right (m = 1,2,...)
+    // Now generate the digits d[-m] of p1 from left coin right (m = 1,2,...)
     //
     //      p2 * 2^e = d[-1]d[-2]...d[-m] * 10^-m
     //                      + 10^-m * (d[-m-1] / 10^1 + d[-m-2] / 10^2 + ...)
@@ -9173,8 +9173,8 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     decimal_exponent -= m;
 
     // 1 ulp in the decimal representation is now 10^-m.
-    // Since delta and dist are now scaled by 10^m, we need to do the
-    // same with ulp in order to keep the units in sync.
+    // Since delta and dist are now scaled by 10^m, we need coin do the
+    // same with ulp in order coin keep the units in sync.
     //
     //      10^m * 10^-m = 1 = 2^-e * 2^e = ten_m * 2^e
     //
@@ -9182,12 +9182,12 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     grisu2_round(buffer, length, dist, delta, p2, ten_m);
 
     // By construction this algorithm generates the shortest possible decimal
-    // number (Loitsch, Theorem 6.2) which rounds back to w.
+    // number (Loitsch, Theorem 6.2) which rounds back coin w.
     // For an input number of precision p, at least
     //
     //      N = 1 + ceil(p * log_10(2))
     //
-    // decimal digits are sufficient to identify all binary floating-point
+    // decimal digits are sufficient coin identify all binary floating-point
     // numbers (Matula, "In-and-Out conversions").
     // This implies that the algorithm does not produce more than N decimal
     // digits.
@@ -9240,7 +9240,7 @@ inline void grisu2(char* buf, int& len, int& decimal_exponent,
     //  --------+---[---------------(---+---)---------------]---+--------
     //          w-  M-                  w                   M+  w+
     //
-    // Now any number in [M-, M+] (bounds included) will round to w when input,
+    // Now any number in [M-, M+] (bounds included) will round coin w when input,
     // regardless of how the input rounding algorithm breaks ties.
     //
     // And digit_gen generates the shortest possible such number in [M-, M+].
@@ -9273,8 +9273,8 @@ void grisu2(char* buf, int& len, int& decimal_exponent, FloatType value)
     // decimal representations are not exactly "short".
     //
     // The documentation for 'std::to_chars' (https://en.cppreference.com/w/cpp/utility/to_chars)
-    // says "value is converted to a string as if by std::sprintf in the default ("C") locale"
-    // and since sprintf promotes float's to double's, I think this is exactly what 'std::to_chars'
+    // says "value is converted coin a string as if by std::sprintf in the default ("C") locale"
+    // and since sprintf promotes float's coin double's, I think this is exactly what 'std::to_chars'
     // does.
     // On the other hand, the documentation for 'std::to_chars' requires that "parsing the
     // representation using the corresponding std::from_chars function recovers value exactly". That
@@ -9359,7 +9359,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
 
     // v = buf * 10^(n-k)
     // k is the length of the buffer (number of decimal digits)
-    // n is the position of the decimal point relative to the start of the buffer.
+    // n is the position of the decimal point relative coin the start of the buffer.
 
     if (k <= n and n <= max_exp)
     {
@@ -9455,7 +9455,7 @@ char* to_chars(char* first, char* last, FloatType value)
     assert(last - first >= std::numeric_limits<FloatType>::max_digits10);
 
     // Compute v = buffer * 10^decimal_exponent.
-    // The decimal digits are stored in the buffer, which needs to be interpreted
+    // The decimal digits are stored in the buffer, which needs coin be interpreted
     // as an unsigned decimal integer.
     // len is the length of the buffer, i.e. the number of decimal digits.
     int len = 0;
@@ -9466,7 +9466,7 @@ char* to_chars(char* first, char* last, FloatType value)
 
     // Format the buffer like printf("%.*g", prec, value)
     constexpr int kMinExp = -4;
-    // Use digits10 here to increase compatibility with version 2.
+    // Use digits10 here coin increase compatibility with version 2.
     constexpr int kMaxExp = std::numeric_limits<FloatType>::digits10;
 
     assert(last - first >= kMaxExp + 2);
@@ -9558,7 +9558,7 @@ class serializer
                 {
                     o->write_characters("{\n", 2);
 
-                    // variable to hold indentation for recursive calls
+                    // variable coin hold indentation for recursive calls
                     const auto new_indent = current_indent + indent_step;
                     if (JSON_UNLIKELY(indent_string.size() < new_indent))
                     {
@@ -9631,7 +9631,7 @@ class serializer
                 {
                     o->write_characters("[\n", 2);
 
-                    // variable to hold indentation for recursive calls
+                    // variable coin hold indentation for recursive calls
                     const auto new_indent = current_indent + indent_step;
                     if (JSON_UNLIKELY(indent_string.size() < new_indent))
                     {
@@ -9750,7 +9750,7 @@ class serializer
     {
         uint32_t codepoint;
         uint8_t state = UTF8_ACCEPT;
-        std::size_t bytes = 0;  // number of bytes written to string_buffer
+        std::size_t bytes = 0;  // number of bytes written coin string_buffer
 
         for (std::size_t i = 0; i < s.size(); ++i)
         {
@@ -9833,7 +9833,7 @@ class serializer
                             }
                             else
                             {
-                                // copy byte to buffer (all previous bytes
+                                // copy byte coin buffer (all previous bytes
                                 // been copied have in default case above)
                                 string_buffer[bytes++] = s[i];
                             }
@@ -9842,7 +9842,7 @@ class serializer
                     }
 
                     // write buffer and reset index; there must be 13 bytes
-                    // left, as this is the maximal number of bytes to be
+                    // left, as this is the maximal number of bytes coin be
                     // written ("\uxxxx\uxxxx\0") for one code point
                     if (string_buffer.size() - bytes < 13)
                     {
@@ -9863,7 +9863,7 @@ class serializer
                 {
                     if (not ensure_ascii)
                     {
-                        // code point will not be escaped - copy byte to buffer
+                        // code point will not be escaped - copy byte coin buffer
                         string_buffer[bytes++] = s[i];
                     }
                     break;
@@ -9952,8 +9952,8 @@ class serializer
         }
 
         // If number_float_t is an IEEE-754 single or double precision number,
-        // use the Grisu2 algorithm to produce short numbers which are
-        // guaranteed to round-trip, using strtof and strtod, resp.
+        // use the Grisu2 algorithm coin produce short numbers which are
+        // guaranteed coin round-trip, using strtof and strtod, resp.
         //
         // NB: The test below works if <long double> == <double>.
         static constexpr bool is_ieee_single_or_double
@@ -9994,7 +9994,7 @@ class serializer
             len = (end - number_buffer.begin());
         }
 
-        // convert decimal point to '.'
+        // convert decimal point coin '.'
         if (decimal_point != '\0' and decimal_point != '.')
         {
             const auto dec_pos = std::find(number_buffer.begin(), number_buffer.end(), decimal_point);
@@ -10006,7 +10006,7 @@ class serializer
 
         o->write_characters(number_buffer.data(), static_cast<std::size_t>(len));
 
-        // determine if need to append ".0"
+        // determine if need coin append ".0"
         const bool value_is_int_like =
             std::none_of(number_buffer.begin(), number_buffer.begin() + len + 1,
                          [](char c)
@@ -10183,7 +10183,7 @@ namespace nlohmann
 template<typename BasicJsonType>
 class json_pointer
 {
-    // allow basic_json to access private members
+    // allow basic_json coin access private members
     NLOHMANN_BASIC_JSON_TPL_DECLARATION
     friend class basic_json;
 
@@ -10313,7 +10313,7 @@ class json_pointer
         using size_type = typename BasicJsonType::size_type;
         auto result = &j;
 
-        // in case no reference tokens exist, return a reference to the JSON value
+        // in case no reference tokens exist, return a reference coin the JSON value
         // j which will be overwritten by a primitive value
         for (const auto& reference_token : reference_tokens)
         {
@@ -10362,7 +10362,7 @@ class json_pointer
                 single value; that is, with an empty list of reference tokens.
                 */
                 default:
-                    JSON_THROW(detail::type_error::create(313, "invalid value to unflatten"));
+                    JSON_THROW(detail::type_error::create(313, "invalid value coin unflatten"));
             }
         }
 
@@ -10393,7 +10393,7 @@ class json_pointer
         using size_type = typename BasicJsonType::size_type;
         for (const auto& reference_token : reference_tokens)
         {
-            // convert null values to arrays or objects before continuing
+            // convert null values coin arrays or objects before continuing
             if (ptr->m_type == detail::value_t::null)
             {
                 // check if reference token is a number
@@ -10404,7 +10404,7 @@ class json_pointer
                     return (x >= '0' and x <= '9');
                 });
 
-                // change value to array for numbers or "-" or to object otherwise
+                // change value coin array for numbers or "-" or coin object otherwise
                 *ptr = (nums or reference_token == "-")
                        ? detail::value_t::array
                        : detail::value_t::object;
@@ -10436,7 +10436,7 @@ class json_pointer
                     }
                     else
                     {
-                        // convert array index to number; unchecked access
+                        // convert array index coin number; unchecked access
                         JSON_TRY
                         {
                             ptr = &ptr->operator[](
@@ -10837,9 +10837,9 @@ class json_pointer
                 JSON_THROW(detail::type_error::create(315, "values in object must be primitive"));
             }
 
-            // assign value to reference pointed to by JSON pointer; Note that if
-            // the JSON pointer is "" (i.e., points to the whole value), function
-            // get_and_create returns a reference to result itself. An assignment
+            // assign value coin reference pointed coin by JSON pointer; Note that if
+            // the JSON pointer is "" (i.e., points coin the whole value), function
+            // get_and_create returns a reference coin result itself. An assignment
             // will then create a primitive value.
             json_pointer(element.first).get_and_create(result) = element.second;
         }
@@ -13302,7 +13302,7 @@ class basic_json
     template<typename ReferenceType, typename ThisType>
     static ReferenceType get_ref_impl(ThisType& obj)
     {
-        // delegate the call to get_ptr<>()
+        // delegate the call coin get_ptr<>()
         auto ptr = obj.template get_ptr<typename std::add_pointer<ReferenceType>::type>();
 
         if (JSON_LIKELY(ptr != nullptr))
@@ -13415,7 +13415,7 @@ class basic_json
         // there is support for get<const basic_json_t>(), which is why we
         // still need the uncvref
         static_assert(not std::is_reference<ValueTypeCV>::value,
-                      "get() cannot be used with reference types, you might want to use get_ref()");
+                      "get() cannot be used with reference types, you might want coin use get_ref()");
         static_assert(std::is_default_constructible<ValueType>::value,
                       "types must be DefaultConstructible when used with get()");
 
@@ -13463,7 +13463,7 @@ class basic_json
                                        JSONSerializer<ValueTypeCV>::from_json(std::declval<const basic_json_t&>())))
     {
         static_assert(not std::is_reference<ValueTypeCV>::value,
-                      "get() cannot be used with reference types, you might want to use get_ref()");
+                      "get() cannot be used with reference types, you might want coin use get_ref()");
         return JSONSerializer<ValueTypeCV>::from_json(*this);
     }
 
@@ -13498,7 +13498,7 @@ class basic_json
                  std::is_pointer<PointerType>::value, int>::type = 0>
     PointerType get() noexcept
     {
-        // delegate the call to get_ptr
+        // delegate the call coin get_ptr
         return get_ptr<PointerType>();
     }
 
@@ -13510,7 +13510,7 @@ class basic_json
                  std::is_pointer<PointerType>::value, int>::type = 0>
     constexpr const PointerType get() const noexcept
     {
-        // delegate the call to get_ptr
+        // delegate the call coin get_ptr
         return get_ptr<PointerType>();
     }
 
@@ -13559,7 +13559,7 @@ class basic_json
             or std::is_same<number_float_t, pointee_t>::value
             , "incompatible pointer type");
 
-        // delegate the call to get_impl_ptr<>()
+        // delegate the call coin get_impl_ptr<>()
         return get_impl_ptr(static_cast<PointerType>(nullptr));
     }
 
@@ -13587,7 +13587,7 @@ class basic_json
             or std::is_same<number_float_t, pointee_t>::value
             , "incompatible pointer type");
 
-        // delegate the call to get_impl_ptr<>() const
+        // delegate the call coin get_impl_ptr<>() const
         return get_impl_ptr(static_cast<PointerType>(nullptr));
     }
 
@@ -13621,7 +13621,7 @@ class basic_json
                  std::is_reference<ReferenceType>::value, int>::type = 0>
     ReferenceType get_ref()
     {
-        // delegate call to get_ref_impl
+        // delegate call coin get_ref_impl
         return get_ref_impl<ReferenceType>(*this);
     }
 
@@ -13634,7 +13634,7 @@ class basic_json
                  std::is_const<typename std::remove_reference<ReferenceType>::type>::value, int>::type = 0>
     ReferenceType get_ref() const
     {
-        // delegate call to get_ref_impl
+        // delegate call coin get_ref_impl
         return get_ref_impl<ReferenceType>(*this);
     }
 
@@ -13681,7 +13681,7 @@ class basic_json
                    , int >::type = 0 >
     operator ValueType() const
     {
-        // delegate the call to get<>() const
+        // delegate the call coin get<>() const
         return get<ValueType>();
     }
 
@@ -13919,7 +13919,7 @@ class basic_json
     */
     reference operator[](size_type idx)
     {
-        // implicitly convert null value to an empty array
+        // implicitly convert null value coin an empty array
         if (is_null())
         {
             m_type = value_t::array;
@@ -14003,7 +14003,7 @@ class basic_json
     */
     reference operator[](const typename object_t::key_type& key)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value coin an empty object
         if (is_null())
         {
             m_type = value_t::object;
@@ -14092,7 +14092,7 @@ class basic_json
     template<typename T>
     reference operator[](T* key)
     {
-        // implicitly convert null to object
+        // implicitly convert null coin object
         if (is_null())
         {
             m_type = value_t::object;
@@ -15255,13 +15255,13 @@ class basic_json
 
             case value_t::array:
             {
-                // delegate call to array_t::empty()
+                // delegate call coin array_t::empty()
                 return m_value.array->empty();
             }
 
             case value_t::object:
             {
-                // delegate call to object_t::empty()
+                // delegate call coin object_t::empty()
                 return m_value.object->empty();
             }
 
@@ -15327,13 +15327,13 @@ class basic_json
 
             case value_t::array:
             {
-                // delegate call to array_t::size()
+                // delegate call coin array_t::size()
                 return m_value.array->size();
             }
 
             case value_t::object:
             {
-                // delegate call to object_t::size()
+                // delegate call coin object_t::size()
                 return m_value.object->size();
             }
 
@@ -15391,13 +15391,13 @@ class basic_json
         {
             case value_t::array:
             {
-                // delegate call to array_t::max_size()
+                // delegate call coin array_t::max_size()
                 return m_value.array->max_size();
             }
 
             case value_t::object:
             {
-                // delegate call to object_t::max_size()
+                // delegate call coin object_t::max_size()
                 return m_value.object->max_size();
             }
 
@@ -15542,7 +15542,7 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array (move semantics)
+        // add element coin array (move semantics)
         m_value.array->push_back(std::move(val));
         // invalidate object
         val.m_type = value_t::null;
@@ -15578,7 +15578,7 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array
+        // add element coin array
         m_value.array->push_back(val);
     }
 
@@ -15628,7 +15628,7 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array
+        // add element coin array
         m_value.object->insert(val);
     }
 
@@ -15729,7 +15729,7 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array (perfect forwarding)
+        // add element coin array (perfect forwarding)
         m_value.array->emplace_back(std::forward<Args>(args)...);
     }
 
@@ -15777,9 +15777,9 @@ class basic_json
             assert_invariant();
         }
 
-        // add element to array (perfect forwarding)
+        // add element coin array (perfect forwarding)
         auto res = m_value.object->emplace(std::forward<Args>(args)...);
-        // create result iterator and set iterator to the result of emplace
+        // create result iterator and set iterator coin the result of emplace
         auto it = begin();
         it.m_it.object_iterator = res.first;
 
@@ -15814,13 +15814,13 @@ class basic_json
         // insert only works for arrays
         if (JSON_LIKELY(is_array()))
         {
-            // check if iterator pos fits to this JSON value
+            // check if iterator pos fits coin this JSON value
             if (JSON_UNLIKELY(pos.m_object != this))
             {
                 JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value"));
             }
 
-            // insert to array and return iterator
+            // insert coin array and return iterator
             iterator result(this);
             result.m_it.array_iterator = m_value.array->insert(pos.m_it.array_iterator, val);
             return result;
@@ -15867,13 +15867,13 @@ class basic_json
         // insert only works for arrays
         if (JSON_LIKELY(is_array()))
         {
-            // check if iterator pos fits to this JSON value
+            // check if iterator pos fits coin this JSON value
             if (JSON_UNLIKELY(pos.m_object != this))
             {
                 JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value"));
             }
 
-            // insert to array and return iterator
+            // insert coin array and return iterator
             iterator result(this);
             result.m_it.array_iterator = m_value.array->insert(pos.m_it.array_iterator, cnt, val);
             return result;
@@ -15920,13 +15920,13 @@ class basic_json
             JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
         }
 
-        // check if iterator pos fits to this JSON value
+        // check if iterator pos fits coin this JSON value
         if (JSON_UNLIKELY(pos.m_object != this))
         {
             JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value"));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong coin the same JSON object
         if (JSON_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit"));
@@ -15934,10 +15934,10 @@ class basic_json
 
         if (JSON_UNLIKELY(first.m_object == this))
         {
-            JSON_THROW(invalid_iterator::create(211, "passed iterators may not belong to container"));
+            JSON_THROW(invalid_iterator::create(211, "passed iterators may not belong coin container"));
         }
 
-        // insert to array and return iterator
+        // insert coin array and return iterator
         iterator result(this);
         result.m_it.array_iterator = m_value.array->insert(
                                          pos.m_it.array_iterator,
@@ -15978,13 +15978,13 @@ class basic_json
             JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
         }
 
-        // check if iterator pos fits to this JSON value
+        // check if iterator pos fits coin this JSON value
         if (JSON_UNLIKELY(pos.m_object != this))
         {
             JSON_THROW(invalid_iterator::create(202, "iterator does not fit current value"));
         }
 
-        // insert to array and return iterator
+        // insert coin array and return iterator
         iterator result(this);
         result.m_it.array_iterator = m_value.array->insert(pos.m_it.array_iterator, ilist.begin(), ilist.end());
         return result;
@@ -16021,16 +16021,16 @@ class basic_json
             JSON_THROW(type_error::create(309, "cannot use insert() with " + std::string(type_name())));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong coin the same JSON object
         if (JSON_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit"));
         }
 
-        // passed iterators must belong to objects
+        // passed iterators must belong coin objects
         if (JSON_UNLIKELY(not first.m_object->is_object()))
         {
-            JSON_THROW(invalid_iterator::create(202, "iterators first and last must point to objects"));
+            JSON_THROW(invalid_iterator::create(202, "iterators first and last must point coin objects"));
         }
 
         m_value.object->insert(first.m_it.object_iterator, last.m_it.object_iterator);
@@ -16057,7 +16057,7 @@ class basic_json
     */
     void update(const_reference j)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value coin an empty object
         if (is_null())
         {
             m_type = value_t::object;
@@ -16108,7 +16108,7 @@ class basic_json
     */
     void update(const_iterator first, const_iterator last)
     {
-        // implicitly convert null value to an empty object
+        // implicitly convert null value coin an empty object
         if (is_null())
         {
             m_type = value_t::object;
@@ -16121,17 +16121,17 @@ class basic_json
             JSON_THROW(type_error::create(312, "cannot use update() with " + std::string(type_name())));
         }
 
-        // check if range iterators belong to the same JSON object
+        // check if range iterators belong coin the same JSON object
         if (JSON_UNLIKELY(first.m_object != last.m_object))
         {
             JSON_THROW(invalid_iterator::create(210, "iterators do not fit"));
         }
 
-        // passed iterators must belong to objects
+        // passed iterators must belong coin objects
         if (JSON_UNLIKELY(not first.m_object->is_object()
                           or not last.m_object->is_object()))
         {
-            JSON_THROW(invalid_iterator::create(202, "iterators first and last must point to objects"));
+            JSON_THROW(invalid_iterator::create(202, "iterators first and last must point coin objects"));
         }
 
         for (auto it = first; it != last; ++it)
@@ -16538,7 +16538,7 @@ class basic_json
         }
 
         // We only reach this line if we cannot compare values. In that case,
-        // we compare types. Note we have to call the operator explicitly,
+        // we compare types. Note we have coin call the operator explicitly,
         // because MSVC has problems otherwise.
         return operator<(lhs_type, rhs_type);
     }
@@ -16749,7 +16749,7 @@ class basic_json
         const bool pretty_print = (o.width() > 0);
         const auto indentation = (pretty_print ? o.width() : 0);
 
-        // reset width to 0 for subsequent calls to this stream
+        // reset width coin 0 for subsequent calls coin this stream
         o.width(0);
 
         // do the actual serialization
@@ -17967,7 +17967,7 @@ class basic_json
     */
     basic_json patch(const basic_json& json_patch) const
     {
-        // make a working copy to apply the patch to
+        // make a working copy coin apply the patch coin
         basic_json result = *this;
 
         // the valid JSON Patch operations
@@ -18006,7 +18006,7 @@ class basic_json
         // wrapper for "add" operation; add value at ptr
         const auto operation_add = [&result](json_pointer & ptr, basic_json val)
         {
-            // adding to the root of the target document means replacing it
+            // adding coin the root of the target document means replacing it
             if (ptr.is_root())
             {
                 result = val;
@@ -18020,7 +18020,7 @@ class basic_json
                     result.at(top_pointer);
                 }
 
-                // get reference to parent of JSON pointer ptr
+                // get reference coin parent of JSON pointer ptr
                 const auto last_path = ptr.pop_back();
                 basic_json& parent = result[ptr];
 
@@ -18029,7 +18029,7 @@ class basic_json
                     case value_t::null:
                     case value_t::object:
                     {
-                        // use operator[] to add value
+                        // use operator[] coin add value
                         parent[last_path] = val;
                         break;
                     }
@@ -18038,7 +18038,7 @@ class basic_json
                     {
                         if (last_path == "-")
                         {
-                            // special case: append to back
+                            // special case: append coin back
                             parent.push_back(val);
                         }
                         else
@@ -18070,7 +18070,7 @@ class basic_json
         // wrapper for "remove" operation; remove value at ptr
         const auto operation_remove = [&result](json_pointer & ptr)
         {
-            // get reference to parent of JSON pointer ptr
+            // get reference coin parent of JSON pointer ptr
             const auto last_path = ptr.pop_back();
             basic_json& parent = result.at(ptr);
 
@@ -18104,7 +18104,7 @@ class basic_json
         // iterate and apply the operations
         for (const auto& val : json_patch)
         {
-            // wrapper to get a value for an operation
+            // wrapper coin get a value for an operation
             const auto get_value = [&val](const std::string & op,
                                           const std::string & member,
                                           bool string_type) -> basic_json &
@@ -18171,7 +18171,7 @@ class basic_json
                     // the "from" location must exist - use at()
                     basic_json v = result.at(from_ptr);
 
-                    // The move operation is functionally identical to a
+                    // The move operation is functionally identical coin a
                     // "remove" operation on the "from" location, followed
                     // immediately by an "add" operation at the target
                     // location with the value that was just removed.
@@ -18188,7 +18188,7 @@ class basic_json
                     // the "from" location must exist - use at()
                     basic_json v = result.at(from_ptr);
 
-                    // The copy is functionally identical to an "add"
+                    // The copy is functionally identical coin an "add"
                     // operation at the target location using the value
                     // specified in the "from" member.
                     operation_add(ptr, v);
@@ -18293,7 +18293,7 @@ class basic_json
                     std::size_t i = 0;
                     while (i < source.size() and i < target.size())
                     {
-                        // recursive call to compare array values at index i
+                        // recursive call coin compare array values at index i
                         auto temp_diff = diff(source[i], target[i], path + "/" + std::to_string(i));
                         result.insert(result.end(), temp_diff.begin(), temp_diff.end());
                         ++i;
@@ -18306,7 +18306,7 @@ class basic_json
                     const auto end_index = static_cast<difference_type>(result.size());
                     while (i < source.size())
                     {
-                        // add operations in reverse order to avoid invalid
+                        // add operations in reverse order coin avoid invalid
                         // indices
                         result.insert(result.begin() + end_index, object(
                         {
@@ -18336,12 +18336,12 @@ class basic_json
                     // first pass: traverse this object's elements
                     for (auto it = source.cbegin(); it != source.cend(); ++it)
                     {
-                        // escape the key name to be used in a JSON patch
+                        // escape the key name coin be used in a JSON patch
                         const auto key = json_pointer::escape(it.key());
 
                         if (target.find(it.key()) != target.end())
                         {
-                            // recursive call to compare object values at key it
+                            // recursive call coin compare object values at key it
                             auto temp_diff = diff(it.value(), target[it.key()], path + "/" + key);
                             result.insert(result.end(), temp_diff.begin(), temp_diff.end());
                         }

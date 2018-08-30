@@ -9,9 +9,10 @@
 
 namespace trading {
     class path_node {
-        Coins to;
-        float ammount;
-
+        public:
+            Coins coin;
+            double amount;
+            double price;
     };
 }
 

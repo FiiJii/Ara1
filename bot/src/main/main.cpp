@@ -15,39 +15,46 @@
 #include <thread>
 #include <utility>
 #include <rest/api.hpp>
+#include <path_node.hpp>
+#include <rest/transaction.hpp>
 
 void ticker_callback(trading::Ticker ticker) {
     nlohmann::json json = ticker;
 
 }
-void register_db(std::vector<trading::Coins> path){
-    Poco::Net::HTTPClientSession session("localhost",8000);
-    std::string url_transaction("/api/trading/transactions/");
-    std::string url_transaction_details("/api/trading/transactions_details/");
-    Poco::Net::HTTPRequest request(Poco::Net::HTTPRequest::HTTP_POST, url_transaction, Poco::Net::HTTPMessage::HTTP_1_1);
-    Poco::Net::HTTPResponse response;
-    session.sendRequest(request);
-    auto& response_body=session.receiveResponse(response);
-    if(response.getStatus()==Poco::Net::HTTPResponse::HTTP_CREATED){
-        nlohmann::json response_json;
-        response_body>>response_json;
-        for(int i=0;i<path.size();i++){
-            Poco::Net::HTTPRequest request_detail(Poco::Net::HTTPRequest::HTTP_POST, url_transaction, Poco::Net::HTTPMessage::HTTP_1_1);
-            Poco::Net::HTTPResponse response_detail;
-            auto tries=3;
-            do{
-                session.sendRequest(request_detail);
-                auto& detail_body=session.receiveResponse(response_detail);
-            }while(tries-->0&&response_detail.getStatus()!=Poco::Net::HTTPResponse::HTTP_CREATED);
-
-        }
+void register_db(std::vector<trading::path_node> path){
+    using namespace trading::rest;
+    api api_rest("localhost",8000);
+    auto err=api_rest.login("trading_bot","trading");
+    if (err) std::cout<<"login error:"<<err->code<<";"<<err->message<<"\n";
+    Transaction transaction;
+    transaction.details.reserve(path.size());
+    for(auto idx=0;idx<path.size()-1;idx++){
+        Transaction_Detail detail={};
+        auto& current_node=path[idx];
+        auto& next_node=path[idx+1];
+        transaction.details.push_back(
+                {.id=0,
+                 .url="",
+                 .from=current_node.coin,
+                 .to=next_node.coin,
+                 .fee=0,
+                 .price=next_node.price,
+                 .amount=next_node.price
+                });
     }
+
+    auto r=api_rest.register_transaction(transaction);
+    if(r.failed())
+        std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
 }
 int main() {
     okex::Api api;
     bool running=true;
-    trading::rest::api api_rest("localhost",8000);
-    auto res=api_rest.login("trading_bot","trading");
+
+
+
+
     try {
         auto start_time = std::chrono::high_resolution_clock::now();
         api.register_for_ticker(trading::Coins::btc, trading::Coins::ltc);
@@ -74,19 +81,22 @@ int main() {
         }
         );
         std::thread search_thread([&running,&graph,&graph_mutex] {
-                std::vector<std::vector<trading::Coins>> paths;
-                paths.push_back({trading::Coins::usd,trading::Coins ::btc,trading::Coins::ltc,trading::Coins::usd});
-                paths.push_back({trading::Coins::usd,trading::Coins ::ltc,trading::Coins::btc,trading::Coins::usd});
+                using namespace trading;
+                std::vector<std::vector<path_node>> paths;
+                paths.push_back({{Coins::usd},{Coins ::btc},{Coins::ltc},{Coins::usd}});
+                paths.push_back({{Coins::usd},{Coins ::ltc},{Coins::btc},{Coins::usd}});
                 while(running) {
                     graph_mutex.lock();
                     double initial_invest = 10000;
                     double max_path_gain = 0;
-                    std::vector<trading::Coins> max_path;
+                    std::vector<path_node> max_path;
                     for (auto path:paths) {
                         double current_capital = initial_invest;
                         for (int idx = 0; idx < path.size() - 1; idx++) {
-                            auto price=graph.get_edge(path[idx], path[idx + 1]).price;
-                            current_capital = price==0?0:current_capital /price ;
+                            auto price=graph.get_edge(path[idx].coin, path[idx + 1].coin).price;
+                            current_capital = price==0?0:current_capital /price;
+                            path[idx+1].amount=current_capital;
+                            path[idx+1].price=price;
                         }
                         double path_gain = current_capital - initial_invest;
                         if (path_gain > max_path_gain) {
@@ -94,6 +104,7 @@ int main() {
                             max_path = path;
                         }
                     }
+
                     if (max_path.size() > 0) {
                         register_db(max_path);
                     }
