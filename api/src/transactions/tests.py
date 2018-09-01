@@ -34,4 +34,67 @@ class UserLoginTokenTestCase(APILiveServerTestCase):
         response = requests.post(url,json=data)
         self.assertEqual(200, response.status_code)
         self.assertTrue("access" in json.loads(response.content))
+        self.token = response.json()
+        #print(self.token['access'])  
     
+class TransactionsTestCase(UserLoginTokenTestCase):
+
+    def get_url_server(self):
+        return self.live_server_url+"/"
+    
+        """
+        So create user
+        """
+    def setUp(self):
+        self.username = "john"
+        self.email = "john@snow.com"
+        self.password = "you_know_nothing"
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.test_authentication_with_valid_data()
+    
+        """
+        Test to verify the create a token
+        """    
+    def get_token(self):
+        url = self.get_url_server()+"api/auth/token/"
+        data = {"username":self.username,"password": self.password}
+        response = requests.post(url,json=data)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue("access" in json.loads(response.content))
+        self.auth = response.json()
+        self.token = self.auth['access']
+        #print(self.token)
+
+    def test_register_transaction(self):
+        """
+        Get 'access' token 
+        """
+        self.get_token()
+        self.token = self.auth['access']
+
+        """
+        Test to verify the create a transaction
+        """
+        url = self.get_url_server()+"api/trading/transactions/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        #print(header)
+        response = requests.post(url,headers=header)
+        self.assertEqual(201, response.status_code)
+
+    def test_query_all_transaction(self):
+        """
+        Get 'access' token 
+        """
+        self.get_token()
+        self.token = self.auth['access']
+        
+        """
+        Test to verify transactions queries already created
+        """
+        url = self.get_url_server()+"api/trading/transactions/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        print(header)
+        response = requests.get(url,headers=header)
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        self.assertEqual(data["count"],1)
