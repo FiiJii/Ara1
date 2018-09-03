@@ -87,14 +87,43 @@ class TransactionsTestCase(UserLoginTokenTestCase):
         """
         self.get_token()
         self.token = self.auth['access']
+
+        self.test_register_transaction()
+        self.test_register_transaction()
         
         """
         Test to verify transactions queries already created
         """
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
-        print(header)
+        #print(header)
         response = requests.get(url,headers=header)
         self.assertEqual(200, response.status_code)
         data = response.json()
-        self.assertEqual(data["count"],1)
+        #print(data)
+        self.assertEqual(data["count"],2)
+
+    def test_register_detail_transaction(self):
+        """
+        Get 'access' token 
+        """
+        self.get_token()
+        self.token = self.auth['access']
+
+        self.test_register_transaction()
+
+        url = self.get_url_server()+"api/trading/transaction_details/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        print(header)
+        data = {
+            "transaction": self.get_url_server()+"api/trading/transactions/1/",
+            "parity": "btc_usd",
+            "amount": "55000.0000000000",
+            "commission": "0.0200000000",
+            "okex_order": 1
+            }
+        print(data)
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+
+
