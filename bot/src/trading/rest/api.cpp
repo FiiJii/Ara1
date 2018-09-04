@@ -8,6 +8,7 @@
 #include "api.hpp"
 #include "Poco/Net/NetSSL.h"
 #include "Poco/Net/HTTPSClientSession.h"
+#include "Poco/Base64Decoder.h"
 #include "nlohmann/json.hpp"
 namespace trading::rest {
     api::api(std::string host, int port) {
@@ -43,7 +44,17 @@ namespace trading::rest {
         return std::optional<Error>();
     }
 
+
+    long  extract_expiration(std::string token){
+        std::istringstream stream{token};
+        Poco::Base64Decoder decoder{stream};
+        nlohmann::json decodedtoken;
+        decoder>>decodedtoken;
+        return decodedtoken["exp"];
+    }
     bool api::is_session_valid() {
+        auto current_time = std::chrono::high_resolution_clock::now();
+        current_time>expiration;
         return false;
     }
 

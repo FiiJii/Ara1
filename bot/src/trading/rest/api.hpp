@@ -28,6 +28,7 @@ namespace trading::rest {
         std::string api_root="/api";
         std::string token;
         std::string refresh_token;
+        long expiration;
         void set_auth_headers(Poco::Net::HTTPRequest& request );
     };
 }

@@ -24,7 +24,7 @@ void ticker_callback(trading::Ticker ticker) {
 }
 void register_db(std::vector<trading::path_node> path){
     using namespace trading::rest;
-    api api_rest("localhost",8000);
+    api api_rest("96.126.114.121",8900);
     auto err=api_rest.login("trading_bot","trading");
     if (err) std::cout<<"login error:"<<err->code<<";"<<err->message<<"\n";
     Transaction transaction;
@@ -56,7 +56,7 @@ int main() {
 
 
     try {
-        auto start_time = std::chrono::high_resolution_clock::now();
+
         api.register_for_ticker(trading::Coins::btc, trading::Coins::ltc);
         api.register_for_ticker(trading::Coins::usd, trading::Coins::btc);
         api.register_for_ticker(trading::Coins::usd, trading::Coins::ltc);
@@ -70,10 +70,8 @@ int main() {
         std::thread listen_thread([&graph,&api,&graph_mutex] {
             api.listen([&graph,&graph_mutex](trading::Ticker t) {
                            graph_mutex.lock();
-                                std::cout<<"adding:"<<trading::coin_name(t.from)<<"->"<<trading::coin_name(t.to)<<"="<<t.last<<std::endl;
-                                std::cout<<"adding:"<<trading::coin_name(t.to)<<"->"<<trading::coin_name(t.from)<<"="<<1.0/t.last<<std::endl;
-                               graph.update_edge(t.from, t.to, trading::Edge_Data{price:t.last});
-                               graph.update_edge(t.to, t.from, trading::Edge_Data{price:1.0/t.last});
+                               graph.update_edge(t.from, t.to, trading::Edge_Data{.price=t.last});
+                               graph.update_edge(t.to, t.from, trading::Edge_Data{.price=1.0/t.last});
                            graph_mutex.unlock();
                        }
             );
@@ -83,8 +81,8 @@ int main() {
         std::thread search_thread([&running,&graph,&graph_mutex] {
                 using namespace trading;
                 std::vector<std::vector<path_node>> paths;
-                paths.push_back({{Coins::usd},{Coins ::btc},{Coins::ltc},{Coins::usd}});
-                paths.push_back({{Coins::usd},{Coins ::ltc},{Coins::btc},{Coins::usd}});
+                paths.push_back({{Coins::usd},{Coins::btc},{Coins::ltc},{Coins::usd}});
+                paths.push_back({{Coins::usd},{Coins::ltc},{Coins::btc},{Coins::usd}});
                 while(running) {
                     graph_mutex.lock();
                     double initial_invest = 10000;
@@ -104,7 +102,6 @@ int main() {
                             max_path = path;
                         }
                     }
-
                     if (max_path.size() > 0) {
                         register_db(max_path);
                     }
