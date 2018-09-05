@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from transactions.models import Transaction, TransactionDetail
 
-class TransactionNestedDetailSerializer(serializers.ModelSerializer):
+class TransactionNestedDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TransactionDetail
         fields = ('parity', 'amount', 'commission')
@@ -15,4 +15,4 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 class TransactionDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TransactionDetail
-        fields =('id', 'transaction', 'parity', 'amount', 'commission','okex_order')
+        fields =('id','url', 'transaction', 'parity', 'amount', 'commission','okex_order')

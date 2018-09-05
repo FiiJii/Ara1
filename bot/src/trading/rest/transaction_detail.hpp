@@ -7,13 +7,13 @@
 
 #include <string>
 #include <api.hpp>
-#include "transaction.hpp"
+
 
 namespace  trading::rest {
-    class transaction_detail {
+    class Transaction_Detail {
         public:
             int id;
-            Transaction transaction;
+            std::string url;
             Coins from;
             Coins to;
             double fee;

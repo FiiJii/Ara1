@@ -11,20 +11,25 @@
 #include <bits/unique_ptr.h>
 #include "result.hpp"
 #include "Poco/Net/HTTPSClientSession.h"
+#include "transaction.hpp"
+
 namespace trading::rest {
     class api {
     public:
         api(std::string host, int port);
 
-        std::optional<result> login(std::string user, std::string password);
-        std::optional<result> refresh();
+        std::optional<Error> login(std::string user, std::string password);
+        std::optional<Error> refresh();
         bool is_session_valid();
-        std::optional<result> register_transaction();
+        result<Transaction> register_transaction(Transaction& transaction);
+        result<Transaction_Detail> register_detail(const Transaction& transaction,Transaction_Detail& detail);
     private:
         std::unique_ptr<Poco::Net::HTTPClientSession> session;
         std::string api_root="/api";
         std::string token;
         std::string refresh_token;
+        long expiration;
+        void set_auth_headers(Poco::Net::HTTPRequest& request );
     };
 }
 #endif //TRADING_API_HPP

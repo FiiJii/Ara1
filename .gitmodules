@@ -1,6 +1,3 @@
 [submodule "thirdparty/nlohmannjson"]
 	path = bot/thirdparty/nlohmannjson
 	url = https://github.com/nlohmann/json
-[submodule "bot/thirdparty/jwt-cpp"]
-	path = bot/thirdparty/jwt-cpp
-	url = https://github.com/Thalhammer/jwt-cpp
