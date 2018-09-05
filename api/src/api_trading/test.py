@@ -1,4 +1,9 @@
-from rest_framework.test import APILiveServerTestCase, APITestCase
+from django.test import TestCase
+from rest_framework.test import APILiveServerTestCase
+import requests
+import json
+from django.contrib.auth.models import User
+
 
 class TradingBaseTestCase(APILiveServerTestCase):
 

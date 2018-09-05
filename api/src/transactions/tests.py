@@ -11,7 +11,8 @@ class UserLoginTokenTestCase(TradingBaseTestCase):
 
     
     def setUp(self):
-       self.setupUser();   
+       self.setupUser();
+
     def test_authentication_without_password(self):
         url = self.get_url_server()+"api/auth/token/"
         response = requests.post(url, {"username":"snowman"})
@@ -49,6 +50,8 @@ class TransactionsTestCase(TradingBaseTestCase):
         #print(header)
         response = requests.post(url,headers=header)
         self.assertEqual(201, response.status_code)
+        self.assertTrue(('id', 'url', 'creation_date' in json.loads(response.content)))
+
 
 class TransactionQueryTestCase(TradingBaseTestCase):
 
@@ -107,3 +110,44 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
         response = requests.post(url,headers=header,json=data)
         self.assertEqual(201, response.status_code)
 
+class TransactionDetailsQueryTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+        url = self.get_url_server()+"api/trading/transactions/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        response = requests.post(url,headers=header)
+        self.transaction_url=response.json()["url"]
+
+
+        url = self.get_url_server()+"api/trading/transaction_details/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data1 = {
+            "transaction": self.transaction_url,
+            "parity": "btc_usd",
+            "amount": "55000.0000000000",
+            "commission": "0.0200000000",
+            "okex_order": 1
+            }
+        data2 = {
+            "transaction": self.transaction_url,
+            "parity": "usd_ltc",
+            "amount": "60000.0000000000",
+            "commission": "0.3200000000",
+            "okex_order": 2
+            }
+        
+        response = requests.post(url,headers=header,json=data1)
+        response = requests.post(url,headers=header,json=data2)
+    
+    def test_query_all_transaction_detail(self):
+        """
+        Test to verify transactions detail queries already created
+        """
+        url = self.get_url_server()+"api/trading/transaction_details/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        response = requests.get(url,headers=header)
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        self.assertEqual(data["count"],2) 
