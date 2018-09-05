@@ -83,7 +83,7 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
         response = requests.post(url,headers=header)
-        self.transaction_url=response.json["url"]
+        self.transaction_url=response.json()["url"]
     
     def test_register_detail_transaction(self):
         """
@@ -97,7 +97,7 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
         header = {'Authorization':'Bearer '+str(self.token)}
         print(header)
         data = {
-            "transaction": self.get_url_server()+"api/trading/transactions/1/",
+            "transaction": self.transaction_url,
             "parity": "btc_usd",
             "amount": "55000.0000000000",
             "commission": "0.0200000000",

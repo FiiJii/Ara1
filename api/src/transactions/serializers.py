@@ -10,7 +10,7 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
     details = TransactionNestedDetailSerializer(many=True, read_only=True)
     class Meta:
         model = Transaction
-        fields =('id','creation_date', 'details')
+        fields =('id','url','creation_date', 'details')
 
 class TransactionDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
