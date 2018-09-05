@@ -10,6 +10,8 @@
 #include "Poco/Net/HTTPSClientSession.h"
 #include "Poco/Base64Decoder.h"
 #include "nlohmann/json.hpp"
+#include <chrono>
+
 namespace trading::rest {
     api::api(std::string host, int port) {
         session = std::make_unique<Poco::Net::HTTPClientSession>(host, port);
@@ -46,7 +48,9 @@ namespace trading::rest {
 
 
     long  extract_expiration(std::string token){
-        std::istringstream stream{token};
+        auto first_dot=token.find(".");
+        auto second_dot=token.find(".",first_dot+1);
+        std::istringstream stream{token.substr(first_dot+1,second_dot-first_dot-1)};
         Poco::Base64Decoder decoder{stream};
         nlohmann::json decodedtoken;
         decoder>>decodedtoken;
@@ -54,8 +58,7 @@ namespace trading::rest {
     }
     bool api::is_session_valid() {
         auto current_time = std::chrono::high_resolution_clock::now();
-        current_time>expiration;
-        return false;
+        return current_time>expiration;
     }
 
     result<Transaction_Detail> api::register_detail(const Transaction& transaction, Transaction_Detail& detail) {
