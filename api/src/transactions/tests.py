@@ -47,10 +47,14 @@ class TransactionsTestCase(TradingBaseTestCase):
         """
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "investment":2000,
+            "earnings": 2250
+            }
         #print(header)
-        response = requests.post(url,headers=header)
+        response = requests.post(url,headers=header,json=data)
         self.assertEqual(201, response.status_code)
-        self.assertTrue(('id', 'url', 'creation_date' in json.loads(response.content)))
+        self.assertTrue(('id', 'url', 'creation_date','investment','earnings' in json.loads(response.content)))
 
 
 class TransactionQueryTestCase(TradingBaseTestCase):
@@ -58,10 +62,20 @@ class TransactionQueryTestCase(TradingBaseTestCase):
     def setUp(self):
         self.setupUser();
         self.setupToken();
-        for i in range(2):
-            url = self.get_url_server()+"api/trading/transactions/"
-            header = {'Authorization':'Bearer '+str(self.token)}
-            response = requests.post(url,headers=header)
+        #for i in range(2):
+        url = self.get_url_server()+"api/trading/transactions/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data1 = {
+            "investment":2000,
+            "earnings": 2250
+            }
+        data2 = {
+            "investment":50000,
+            "earnings": 15500
+            }
+
+        response = requests.post(url,headers=header,json=data1)
+        response = requests.post(url,headers=header,json=data2)
         
     def test_query_all_transaction(self):
         """
@@ -85,7 +99,11 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
         self.setupToken();
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
-        response = requests.post(url,headers=header)
+        data = {
+            "investment":2000,
+            "earnings": 2250
+            }
+        response = requests.post(url,headers=header,json=data)
         self.transaction_url=response.json()["url"]
     
     def test_register_detail_transaction(self):
@@ -104,7 +122,8 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
             "parity": "btc_usd",
             "amount": "55000.0000000000",
             "commission": "0.0200000000",
-            "okex_order": 1
+            "okex_order": 1,
+            "transaction_order": 1
             }
         print(data)
         response = requests.post(url,headers=header,json=data)
@@ -117,7 +136,11 @@ class TransactionDetailsQueryTestCase(TradingBaseTestCase):
         self.setupToken();
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
-        response = requests.post(url,headers=header)
+        data = {
+            "investment":2000,
+            "earnings": 2250
+            }
+        response = requests.post(url,headers=header,json=data)
         self.transaction_url=response.json()["url"]
 
 
@@ -128,14 +151,16 @@ class TransactionDetailsQueryTestCase(TradingBaseTestCase):
             "parity": "btc_usd",
             "amount": "55000.0000000000",
             "commission": "0.0200000000",
-            "okex_order": 1
+            "okex_order": 1060,
+            "transaction_order": 1
             }
         data2 = {
             "transaction": self.transaction_url,
             "parity": "usd_ltc",
             "amount": "60000.0000000000",
             "commission": "0.3200000000",
-            "okex_order": 2
+            "okex_order": 1061,
+            "transaction_order": 2
             }
         
         response = requests.post(url,headers=header,json=data1)
