@@ -12,3 +12,4 @@ class TransactionDetail(models.Model):
     amount = models.DecimalField(max_digits=19, decimal_places=10)
     commission = models.DecimalField(max_digits=19, decimal_places=10)
     okex_order = models.IntegerField(default=0)
+    transaction_order = models.IntegerField(default=0)
