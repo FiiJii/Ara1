@@ -43,7 +43,26 @@ namespace trading::rest {
     }
 
     std::optional<Error> api::refresh() {
-        return std::optional<Error>();
+        using namespace Poco::Net;
+        using namespace nlohmann;
+        std::string endpoint(api_root + "/auth/token_refresh/");
+        json body = {
+                {"refresh", refresh_token}
+        };
+        HTTPRequest request(HTTPRequest::HTTP_POST, endpoint, HTTPMessage::HTTP_1_1);
+        request.setContentType("application/json");
+        request.setContentLength(body.dump().length());
+        session->sendRequest(request) << body;
+        HTTPResponse response;
+        std::string response_string;
+        session->receiveResponse(response) >> response_string;
+        if (response.getStatus() != HTTPResponse::HTTPStatus::HTTP_OK) {
+            return std::optional<trading::rest::Error>(Error{response.getStatus(), response_string});
+        }
+        json response_json = json::parse(response_string);
+        token = response_json["access"];
+        refresh_token = response_json["refresh"];
+        return std::optional<trading::rest::Error>();
     }
 
 
@@ -52,9 +71,9 @@ namespace trading::rest {
         auto second_dot=token.find(".",first_dot+1);
         std::istringstream stream{token.substr(first_dot+1,second_dot-first_dot-1)};
         Poco::Base64Decoder decoder{stream};
-        nlohmann::json decodedtoken;
-        decoder>>decodedtoken;
-        return decodedtoken["exp"];
+        nlohmann::json decoded_token;
+        decoder>>decoded_token;
+        return decoded_token["exp"];
     }
     bool api::is_session_valid() {
         auto current_time = std::chrono::high_resolution_clock::now();
