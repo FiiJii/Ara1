@@ -32,7 +32,7 @@ void register_db(std::vector<trading::path_node> path){
     for(auto idx=0;idx<path.size()-1;idx++){
         Transaction_Detail detail={};
         auto& current_node=path[idx];
-        auto& next_node=path[idx+1];
+        auto& next_node=path[ +1];
         transaction.details.push_back(
                 {.id=0,
                  .url="",

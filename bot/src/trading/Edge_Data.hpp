@@ -5,14 +5,16 @@
 #ifndef TRADING_NODE_HPP
 #define TRADING_NODE_HPP
 
+
 namespace trading {
+
     class Edge_Data {
         public:
             double price;
             double fee;
 
-
     };
+
 }
 
 

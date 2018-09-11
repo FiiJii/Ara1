@@ -122,7 +122,7 @@ namespace trading::rest {
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_CREATED) {
             auto error = Error{response.getStatus(), response_body};
             std::cout << error.code << ";;" << error.message << "\n";
-            auto _result=result<Transaction>{error};
+            auto _result=result<Trhttps://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/setting_up_environment.html ansaction>{error};
             std::cout << "result"<<_result.get_error()->code << ";;" << _result.get_error()->message << "\n";
             return result<Transaction>{error};
         }
