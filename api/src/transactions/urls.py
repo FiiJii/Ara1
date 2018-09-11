@@ -3,8 +3,8 @@ from rest_framework import routers
 from transactions import views
 
 router = routers.DefaultRouter()
-router.register(r'transactions', views.Transaction)
-router.register(r'transaction_details', views.TransactionDetail)
+router.register(r'transactions', views.TransactionView)
+router.register(r'transaction_details', views.TransactionDetailView)
 
 urlpatterns = [
     url(r'^trading/', include(router.urls))    
