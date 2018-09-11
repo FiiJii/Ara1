@@ -16,13 +16,13 @@ class TransactionView(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def max_earnings(self,request):
-        queryset = Transaction.objects.all().order_by('-earnings')
+        queryset = self.filter_queryset(Transaction.objects.all().filter(earnings__gt=0)).order_by('-earnings')
         serializer = self.serializer_class(queryset, many=True, context={'request': request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
     
     @list_route(methods=['get'])
     def max_lost(self, request):
-        queryset = Transaction.objects.all().filter(earnings__lt=0).order_by('-earnings')
+        queryset = self.filter_queryset(Transaction.objects.all().filter(earnings__lt=0)).order_by('earnings')
         serializer = self.serializer_class(queryset, many=True, context={'request': request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
