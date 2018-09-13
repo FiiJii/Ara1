@@ -3,9 +3,9 @@ from rest_framework import routers
 from configuration import views
 
 router = routers.DefaultRouter()
-router.register(r'config', views.BotConfigView)
+router.register(r'bot', views.BotConfigView)
 
 
 urlpatterns = [
-    url(r'^', include(router.urls))
+    url(r'^config/', include(router.urls))
 ]

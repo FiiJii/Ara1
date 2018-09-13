@@ -4,6 +4,6 @@ from configuration.models import BotConfig
 class BotConfigSerializers(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = BotConfig
-        fields = ('bot_status', 'time_interval', 'max_lost')
+        fields = ('id','url','bot_status', 'time_interval', 'max_lost')
 
  

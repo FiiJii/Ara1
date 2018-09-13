@@ -1,20 +1,16 @@
-from configuration.models import BotConfig
+from configuration.models import *
 from .services import *
 from rest_framework import viewsets
-from django.core.exceptions import PermissionDenied
+from rest_framework.exceptions import ValidationError
 from configuration.serializers import BotConfigSerializers
 
 
-# Create your views here.
 class BotConfigView(viewsets.ModelViewSet):
     queryset = BotConfig.objects.all()
     serializer_class = BotConfigSerializers
-
-    def perform_create(self, serializer):
-        config_service = ConfigServicesBase()
-        if config_service.can_config_bot(): 
-           serializer.save()
-        else:
-            raise PermissionDenied("Existe una configuracion del Bot")
     
+    def perform_create(self, serializer):
+        if not can_config_bot():
+            raise ValidationError('Existe una configuracion del Bot')
+        serializer.save()
 
