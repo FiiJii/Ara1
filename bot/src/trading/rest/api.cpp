@@ -77,7 +77,7 @@ namespace trading::rest {
     }
     bool api::is_session_valid() {
         auto current_time = std::chrono::high_resolution_clock::now();
-        return current_time>expiration;
+        return  current_time.time_since_epoch().count()>expiration;
     }
 
     result<Transaction_Detail> api::register_detail(const Transaction& transaction, Transaction_Detail& detail) {
@@ -114,9 +114,15 @@ namespace trading::rest {
         std::string endpoint=api_root+"/trading/transactions/";
         HTTPRequest request(HTTPRequest::HTTP_POST, endpoint, HTTPMessage::HTTP_1_1);
         request.setContentType("application/json");
-        request.setContentLength(0);
+
+        nlohmann::json json={
+                {"investment",transaction.investment},
+                {"earnings",transaction.earnings}
+        };
+        auto body = json.dump();
+        request.setContentLength(body.length());
         set_auth_headers(request);
-        session->sendRequest(request)<<"";
+        session->sendRequest(request)<<body;
         HTTPResponse response;
         std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_CREATED) {

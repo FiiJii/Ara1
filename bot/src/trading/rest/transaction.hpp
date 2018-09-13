@@ -14,6 +14,8 @@ namespace trading::rest {
             int id;
             std::string url;
             std::vector<Transaction_Detail> details;
+            double earnings;
+            double investment;
     };
 }
 

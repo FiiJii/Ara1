@@ -22,17 +22,19 @@ void ticker_callback(trading::Ticker ticker) {
     nlohmann::json json = ticker;
 
 }
-void register_db(std::vector<trading::path_node> path){
+void register_db(std::vector<trading::path_node> path,double initial_invest,double earnings){
     using namespace trading::rest;
     api api_rest("96.126.114.121",8900);
     auto err=api_rest.login("trading_bot","trading");
     if (err) std::cout<<"login error:"<<err->code<<";"<<err->message<<"\n";
     Transaction transaction;
+    transaction.earnings=earnings;
+    transaction.investment=initial_invest;
     transaction.details.reserve(path.size());
     for(auto idx=0;idx<path.size()-1;idx++){
         Transaction_Detail detail={};
         auto& current_node=path[idx];
-        auto& next_node=path[idx+1];
+        auto& next_node=path[ +1];
         transaction.details.push_back(
                 {.id=0,
                  .url="",
@@ -103,7 +105,7 @@ int main() {
                         }
                     }
                     if (max_path.size() > 0) {
-                        register_db(max_path);
+                        register_db(max_path,initial_invest,max_path_gain);
                     }
                     graph_mutex.unlock();
                 }
@@ -111,7 +113,6 @@ int main() {
         );
         listen_thread.join();
         search_thread.join();
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() << std::endl;
     } catch (std::string& e) {
         std::cout << e << std::endl;
     }
