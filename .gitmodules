@@ -1,3 +1,6 @@
 [submodule "thirdparty/nlohmannjson"]
 	path = bot/thirdparty/nlohmannjson
 	url = https://github.com/nlohmann/json
+[submodule "bot/thirdparty/poco"]
+	path = bot/thirdparty/poco
+	url = https://github.com/pocoproject/poco

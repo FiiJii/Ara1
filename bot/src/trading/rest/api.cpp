@@ -11,7 +11,6 @@
 #include "Poco/Base64Decoder.h"
 #include "nlohmann/json.hpp"
 #include <chrono>
-
 namespace trading::rest {
     api::api(std::string host, int port) {
         session = std::make_unique<Poco::Net::HTTPClientSession>(host, port);
@@ -111,13 +110,17 @@ namespace trading::rest {
 
     result<Transaction> api::register_transaction(Transaction& transaction) {
         using namespace Poco::Net;
+
         std::string endpoint=api_root+"/trading/transactions/";
         HTTPRequest request(HTTPRequest::HTTP_POST, endpoint, HTTPMessage::HTTP_1_1);
         request.setContentType("application/json");
-
+        char investment_buffer[40];
+        char earnings_buffer[40];
+        sprintf(investment_buffer,"%.10F",transaction.investment);
+        sprintf(earnings_buffer,"%.10F",transaction.earnings);
         nlohmann::json json={
-                {"investment",transaction.investment},
-                {"earnings",transaction.earnings}
+                {"investment",investment_buffer},
+                {"earnings",earnings_buffer}
         };
         auto body = json.dump();
         request.setContentLength(body.length());

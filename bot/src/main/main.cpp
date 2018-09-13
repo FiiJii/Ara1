@@ -24,7 +24,7 @@ void ticker_callback(trading::Ticker ticker) {
 }
 void register_db(std::vector<trading::path_node> path,double initial_invest,double earnings){
     using namespace trading::rest;
-    api api_rest("96.126.114.121",8900);
+    api api_rest("api-trading.arawato.co",80);
     auto err=api_rest.login("trading_bot","trading");
     if (err) std::cout<<"login error:"<<err->code<<";"<<err->message<<"\n";
     Transaction transaction;
