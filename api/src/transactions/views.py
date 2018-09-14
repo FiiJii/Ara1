@@ -1,5 +1,6 @@
 from transactions.models import Transaction, TransactionDetail
 from rest_framework import viewsets
+from rest_framework import filters
 from transactions.serializers import TransactionSerializer, TransactionDetailSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from transactions.filters import TransactionDateRangeFilter
@@ -28,5 +29,8 @@ class TransactionView(viewsets.ModelViewSet):
 
 class TransactionDetailView(viewsets.ModelViewSet):
     queryset = TransactionDetail.objects.all()
+    filter_fields = ('transaction',)
+    ordering_fields=('id',)
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
     serializer_class = TransactionDetailSerializer
    
