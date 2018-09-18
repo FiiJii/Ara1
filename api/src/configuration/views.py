@@ -11,6 +11,6 @@ class BotConfigView(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         if not can_config_bot():
-            raise ValidationError('Existe una configuracion del Bot')
+            raise ValidationError('There is a configuration of the Bot')
         serializer.save()
 
