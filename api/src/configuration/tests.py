@@ -85,7 +85,8 @@ class BotConfigOtherTestCase(TradingBaseTestCase):
         response = requests.put(url,headers=header,json=data)
         self.assertEqual(200, response.status_code)
         self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
-        self.assertEqual(json.loads(response.content), {"id": self.botConfig_id,"url": self.botConfig_url, "bot_status": False, "time_interval": 3600, "max_lost": "150000.0000000000", "db_verbosity": "medium"})
+        self.assertEqual(json.loads(response.content)["bot_status"], False)
+        
 
     def test_update_specific_field_bot_configuration(self):
 
@@ -97,7 +98,7 @@ class BotConfigOtherTestCase(TradingBaseTestCase):
         
         response = requests.patch(url,headers=header,json=data)
         self.assertEqual(200, response.status_code)
-        self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
+        self.assertEqual(json.loads(response.content)["max_lost"],"250000.0000000000")
 
     
 class BotConfigQueryTestCase(TradingBaseTestCase):
