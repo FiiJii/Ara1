@@ -87,6 +87,18 @@ class BotConfigOtherTestCase(TradingBaseTestCase):
         self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
         self.assertEqual(json.loads(response.content), {"id": self.botConfig_id,"url": self.botConfig_url, "bot_status": False, "time_interval": 3600, "max_lost": "150000.0000000000", "db_verbosity": "medium"})
 
+    def test_update_specific_field_bot_configuration(self):
+
+        url = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "max_lost": "250000.0000000000",
+            }
+        
+        response = requests.patch(url,headers=header,json=data)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
+
     
 class BotConfigQueryTestCase(TradingBaseTestCase):
     
