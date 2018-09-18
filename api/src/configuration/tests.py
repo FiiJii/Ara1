@@ -32,65 +32,57 @@ class BotConfigTestCase(TradingBaseTestCase):
         self.assertEqual(201, response.status_code)
         self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
 
+class BotConfigOtherTestCase(TradingBaseTestCase):
 
-    def test_register_bot_configuration_with_other_in_status_true(self):
-        """
-        Test to verify the create bot configuration
-        """
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
         url = self.get_url_server()+"api/config/bot/"
         header = {'Authorization':'Bearer '+str(self.token)}
-        data1 = {
+        data = {
             "bot_status": True,
             "time_interval": 3600,
             "max_lost": "150000.0000000000",
             "db_verbosity": "medium"
             }
-        data2 = {
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        self.botConfig_id=response.json()["id"]
+        self.botConfig_url=response.json()["url"]
+        
+
+    def test_register_bot_configuration_with_other_in_status_true(self):
+        
+        url = self.get_url_server()+"api/config/bot/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
             "bot_status": True,
             "time_interval": 7200,
             "max_lost": "100000.0000000000",
             "db_verbosity": "silent"
-            }
+            }      
 
-        response = requests.post(url,headers=header,json=data1)
-        self.assertEqual(201, response.status_code)
-        self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
-
-        response = requests.post(url,headers=header,json=data2)
+        response = requests.post(url,headers=header,json=data)
         self.assertEqual(400, response.status_code)
         self.assertTrue("There is a configuration of the Bot" in json.loads(response.content))
+
     
-    
-    def test_update_bot_configuration(self):
+    def test_update_bot_configuration_already_registered(self):
         """
         Test to verify the update bot configuration
-        """
-        url = self.get_url_server()+"api/config/bot/"
+        """      
+        url = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/"
         header = {'Authorization':'Bearer '+str(self.token)}
-        data1 = {
-            "bot_status": True,
-            "time_interval": 3600,
-            "max_lost": "150000.0000000000",
-            "db_verbosity": "medium"
-            }
-        print(data1)
-        response = requests.post(url,headers=header,json=data1)
-        self.assertEqual(201, response.status_code)
-        self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
-        self.botConfig_id=response.json()["id"]
-        self.botConfig_url=response.json()["url"]
-
-        url2 = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/"
-        data2 = {
+        data = {
             "id": self.botConfig_id,
             "bot_status": False,
             "time_interval": 3600,
             "max_lost": "150000.0000000000",
             "db_verbosity": "medium"
             }
-        print(url2)
-        print(data2)
-        response = requests.put(url2,headers=header,json=data2)
+        #print(url)
+        #print(data)
+        response = requests.put(url,headers=header,json=data)
         self.assertEqual(200, response.status_code)
         self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity' in json.loads(response.content)))
         self.assertEqual(json.loads(response.content), {"id": self.botConfig_id,"url": self.botConfig_url, "bot_status": False, "time_interval": 3600, "max_lost": "150000.0000000000", "db_verbosity": "medium"})
