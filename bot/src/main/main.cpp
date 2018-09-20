@@ -17,10 +17,7 @@
 #include <rest/api.hpp>
 #include <path_node.hpp>
 #include <rest/transaction.hpp>
-#include "nana/gui.hpp"
 
-#include "nana/gui/widgets/picture.hpp"
-#include "nana/gui/widgets/label.hpp"
 
 
 void ticker_callback(trading::Ticker ticker) {

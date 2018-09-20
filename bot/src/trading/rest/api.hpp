@@ -23,13 +23,15 @@ namespace trading::rest {
         bool is_session_valid();
         result<Transaction> register_transaction(Transaction& transaction);
         result<Transaction_Detail> register_detail(const Transaction& transaction,Transaction_Detail& detail);
+        result<Transaction_Detail> get_bot_config();
+
     private:
         std::unique_ptr<Poco::Net::HTTPClientSession> session;
         std::string api_root="/api";
         std::string token;
         std::string refresh_token;
         long expiration;
-        void set_auth_headers(Poco::Net::HTTPRequest& request );
+        void set_auth_headers(Poco::Net::HTTPRequest& request);
     };
 }
 #endif //TRADING_API_HPP
