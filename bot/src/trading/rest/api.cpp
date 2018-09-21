@@ -131,9 +131,7 @@ namespace trading::rest {
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_CREATED) {
             auto error = Error{response.getStatus(), response_body};
             std::cout << error.code << ";;" << error.message << "\n";
-            auto _result=result<Transaction>{error};
-            std::cout << "result"<<_result.get_error()->code << ";;" << _result.get_error()->message << "\n";
-            return result<Transaction>{error};
+            return result<Transaction>{nullptr,error};
         }
         auto response_json=nlohmann::json::parse(response_body);
         transaction.id=response_json["id"];
@@ -148,7 +146,34 @@ namespace trading::rest {
     }
 
     void api::set_auth_headers(Poco::Net::HTTPRequest& request) {
+
         request.set("Authorization","Bearer "+token);
+    }
+
+    result<Bot_Config> api::get_bot_config() {
+        using namespace Poco::Net;
+        std::string endpoint=api_root+"/config/bot/";
+        HTTPRequest request(HTTPRequest::HTTP_POST, endpoint, HTTPMessage::HTTP_1_1);
+        request.setContentType("application/json");
+        request.setContentLength(0);
+        set_auth_headers(request);
+        session->sendRequest(request);
+        HTTPResponse response;
+        std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
+        if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_OK) {
+            auto error = Error{response.getStatus(), response_body};
+            return result<Bot_Config>{nullptr,error};
+        }
+        auto response_json=nlohmann::json::parse(response_body);
+        Bot_Config bot_config;
+        bot_config.id =response_json["id"];
+        bot_config.url=response_json["url"];
+        bot_config.max_lost=response_json["max_lost"];
+        bot_config.bot_status=response_json["bot_status"];
+        bot_config.time_interval= response_json["time_interval"];
+
+
+        return result{bot_config};
     }
 
 }

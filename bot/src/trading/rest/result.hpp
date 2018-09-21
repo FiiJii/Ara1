@@ -22,7 +22,7 @@ namespace trading::rest{
 
         }
 
-        result(Error _error):error{_error} {
+        result(nullptr_t aNullptr,Error _error):error{_error} {
         }
 
         const std::optional<Error> get_error() {
