@@ -9,6 +9,6 @@ src/trading/rest/api.cpp
 src/trading/rest/result.cpp 
 src/trading/rest/transaction.cpp 
 src/trading/rest/transaction_detail.cpp 
-src/trading/ticker.cpp 
-)
+src/trading/ticker.cpp
+        src/trading/rest/bot_config.cpp src/trading/rest/bot_config.hpp)
 target_include_directories(okex_linux PUBLIC "src/okex/" "src/main/" "src/trading/" "include/" "/usr/include/" )
