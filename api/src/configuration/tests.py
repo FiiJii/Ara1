@@ -120,7 +120,7 @@ class BotConfigQueryTestCase(TradingBaseTestCase):
 
     def test_query_all_bot_configuration(self):
         """
-        Test to verify transactions queries already created
+        Test to verify configurations queries already created
         """
         url = self.get_url_server()+"api/config/bot/"
         header = {'Authorization':'Bearer '+str(self.token)}
@@ -128,6 +128,56 @@ class BotConfigQueryTestCase(TradingBaseTestCase):
         self.assertEqual(200, response.status_code)
         data = response.json()
         self.assertEqual(data["count"],1)
+
+class CurrencyTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+    def test_register_currency(self):
+        """
+        Test to verify the create currency
+        """
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "description": "Criptomoneda Bitcoin"
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        self.assertTrue(('id', 'url', 'name', 'symbol', 'description' in json.loads(response.content)))
+
+class CurrncyQueryTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "description": "Criptomoneda Bitcoin"
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+    
+    def test_query_all_currencies(self):
+
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        response = requests.get(url,headers=header)
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        self.assertEqual(data["count"],1)
+
+
 
 
 
