@@ -17,12 +17,17 @@
 #include <rest/api.hpp>
 #include <path_node.hpp>
 #include <rest/transaction.hpp>
+<<<<<<< HEAD
 #include "nana/gui.hpp"
 #include <QApplication>
 #include <QWidget>
 #include <QWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+=======
+
+
+>>>>>>> 05d4324418fb3aa8ebe2cbf51b64d05ec500dcb9
 
 void ticker_callback(trading::Ticker ticker) {
     nlohmann::json json = ticker;
@@ -30,7 +35,7 @@ void ticker_callback(trading::Ticker ticker) {
 }
 void register_db(std::vector<trading::path_node> path,double initial_invest,double earnings){
     using namespace trading::rest;
-    api api_rest("96.126.114.121",8900);
+    api api_rest("api-trading.arawato.co",80);
     auto err=api_rest.login("trading_bot","trading");
     if (err) std::cout<<"login error:"<<err->code<<";"<<err->message<<"\n";
     Transaction transaction;
