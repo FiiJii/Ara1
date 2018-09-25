@@ -1,4 +1,3 @@
-
 # CMakeLists files in this project can
 # refer coin the root source directory of the project as ${HELLO_SOURCE_DIR} and
 # coin the root binary directory of the project as ${HELLO_BINARY_DIR}.
@@ -22,11 +21,14 @@ link_directories(./libs)
 message(WARNING ${Poco_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES( ${EJECUTABLE} ${Poco_LIBRARIES} )
-
+FIND_PACKAGE(Qt5 COMPONENTS Core Widgets REQUIRED)
+INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
+TARGET_LINK_LIBRARIES(${EJECUTABLE} ${Qt5Widgets_LIBRARIES})
 FIND_PACKAGE( Boost 1.40 COMPONENTS system filesystem REQUIRED )
 INCLUDE_DIRECTORIES( ${Boostsu_INCLUDE_DIR} )
 TARGET_LINK_LIBRARIES( ${EJECUTABLE} ${Boost_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${EJECUTABLE} nana)
+SET_TARGET_PROPERTIES(${EJECUTABLE} PROPERTIES COMPILE_FLAGS -fPIC )
+
 
 
 

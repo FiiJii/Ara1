@@ -102,7 +102,7 @@ namespace trading::rest {
         HTTPResponse response;
         std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_CREATED)
-            return result<Transaction_Detail>{Error{response.getStatus(),response_body}} ;
+            return rest::result<Transaction_Detail>{nullptr,Error{response.getStatus(),response_body}} ;
         auto response_json=nlohmann::json::parse(response_body);
         detail.id=response_json["id"];
         detail.url=response_json["url"];

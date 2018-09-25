@@ -6,9 +6,10 @@ src/trading/Edge_Data.cpp
 src/trading/Graph.cpp 
 src/trading/path_node.cpp 
 src/trading/rest/api.cpp 
+src/trading/rest/bot_config.cpp 
 src/trading/rest/result.cpp 
 src/trading/rest/transaction.cpp 
 src/trading/rest/transaction_detail.cpp 
-src/trading/ticker.cpp
-        src/trading/rest/bot_config.cpp src/trading/rest/bot_config.hpp)
+src/trading/ticker.cpp 
+)
 target_include_directories(okex_linux PUBLIC "src/okex/" "src/main/" "src/trading/" "include/" "/usr/include/" )

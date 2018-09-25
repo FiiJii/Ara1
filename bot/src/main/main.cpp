@@ -18,10 +18,11 @@
 #include <path_node.hpp>
 #include <rest/transaction.hpp>
 #include "nana/gui.hpp"
-
-#include "nana/gui/widgets/picture.hpp"
-#include "nana/gui/widgets/label.hpp"
-
+#include <QApplication>
+#include <QWidget>
+#include <QWindow>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 
 void ticker_callback(trading::Ticker ticker) {
     nlohmann::json json = ticker;
@@ -55,7 +56,7 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     if(r.failed())
         std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
 }
-int main() {
+int main(int argc,char* argv[]) {
     okex::Api api;
     bool running=true;
 
@@ -116,14 +117,20 @@ int main() {
                 }
             }
         );
-        nana::form form;
-        nana::label label{form};
-        label.caption("asdad");
-        form.show();
-
-
+        std::thread qt_thread([&argc, &argv] {
+            QApplication qt_app(argc, argv);
+            QWidget w;
+            QGraphicsScene graphics_scene;
+            graphics_scene.addText("Probando");
+            QGraphicsView graphics_view{&graphics_scene, &w};
+            w.show();
+            qt_app.exec();
+        });
+        qt_thread.join();
         listen_thread.join();
         search_thread.join();
+
+
     } catch (std::string& e) {
         std::cout << e << std::endl;
     }
