@@ -24,12 +24,7 @@ namespace trading::rest {
         bool is_session_valid();
         result<Transaction> register_transaction(Transaction& transaction);
         result<Transaction_Detail> register_detail(const Transaction& transaction,Transaction_Detail& detail);
-<<<<<<< HEAD
-        result<Transaction_Detail> get_bot_config();
-
-=======
         result<Bot_Config> get_bot_config();
->>>>>>> b6437e49cc5c63016d217686507109530bc7b619
     private:
         std::unique_ptr<Poco::Net::HTTPClientSession> session;
         std::string api_root="/api";

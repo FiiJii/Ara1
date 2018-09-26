@@ -10,6 +10,6 @@ src/trading/rest/bot_config.cpp
 src/trading/rest/result.cpp 
 src/trading/rest/transaction.cpp 
 src/trading/rest/transaction_detail.cpp 
-src/trading/ticker.cpp 
-)
+src/trading/ticker.cpp
+        src/trading/gui/GraphDrawer.cpp src/trading/gui/GraphDrawer.hpp src/trading/QThreadLambda.cpp src/trading/QThreadLambda.hpp src/trading/GraphIterator.cpp src/trading/GraphIterator.hpp)
 target_include_directories(okex_linux PUBLIC "src/okex/" "src/main/" "src/trading/" "include/" "/usr/include/" )

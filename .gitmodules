@@ -4,3 +4,7 @@
 [submodule "bot/thirdparty/poco"]
 	path = bot/thirdparty/poco
 	url = https://github.com/pocoproject/poco
+[submodule "bot/thirdparty/glm"]
+	path = bot/thirdparty/glm
+	url = https://github.com/g-truc/glm
+	branch = stable
