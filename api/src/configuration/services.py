@@ -6,3 +6,4 @@ def get_config_bot_queryset():
     
 def can_config_bot():
     return not get_config_bot_queryset().filter(bot_status=True).exists()
+

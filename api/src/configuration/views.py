@@ -16,23 +16,37 @@ class BotConfigView(viewsets.ModelViewSet):
             raise ValidationError('There is a configuration of the Bot')
         serializer.save()
     
-    @action(methods=['post'], detail=True)  
+    
     def add_coin(self, request, pk):
-        """ obtener la configuracion actual"""
         current_config = BotConfig.objects.get(pk=pk)
 
-        """ obtener la moneda """
         coin = Currency.objects.get(id=request.data['id'])
 
-        """ agregar la moneda a la configuracion """
         current_config.currencies.add(coin)
 
-        """ guardar la configuracion """
         current_config.save()
 
         serializer = BotConfigSerializers(current_config, context={'request': request})
         
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
+    
+    def delete_coin(self, request, pk=None):
+        current_config = BotConfig.objects.get(pk=pk)
+
+        coin = Currency.objects.get(id=request.data['id'])
+
+        current_config.currencies.remove(coin)
+
+        serializer = BotConfigSerializers(current_config, context={'request': request})
+        
+        return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
+         
+    @action(methods=['post','delete'], detail=True)
+    def coins(self, request, pk=None):
+        methods={"POST":lambda: self.add_coin(request,pk),
+                 "DELETE":lambda: self.delete_coin(request,pk)}
+        return methods[request.method]()
+
 
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
