@@ -6,12 +6,13 @@
 #define TRADING_GRAPHITERATOR_HPP
 
 #include "Graph.hpp"
+
 namespace trading {
     class GraphIterator {
 
     public:
         GraphIterator(Graph &graph,Coins root):graph{graph},root{root}{};
-
+        void next(){};
     private:
         Graph& graph;
         Coins root;

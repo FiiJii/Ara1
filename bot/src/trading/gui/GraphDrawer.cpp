@@ -28,7 +28,47 @@ namespace trading::ui {
         setLayout(layout);
 
     }
+    struct VertexProperties{
+        bool drawn;
+    };
+    void draw_node(Graph::NodeType& node,
+                 glm::vec3 position,
+                 QGraphicsScene* scene,
+                 std::map<Coins,VertexProperties> & vertex_properties,
+                 std::map<std::pair<Coins,Coins>,VertexProperties>& edge_properties){
+        using namespace glm;
+        if(vertex_properties.find(node.value)==std::end(vertex_properties) ) vertex_properties[node.value]={false};
+        if(vertex_properties[node.value].drawn)
+            return;
 
+        auto item = new QGraphicsEllipseItem();
+        auto fill_color = QColor::fromRgb(240, 100, 100, 255);
+        auto line_color = QColor::fromRgb(60, 60, 60, 255);
+        item->setRect(QRect{(int) position.x, (int) position.y, 100, 100});
+        fill_color = QColor::fromRgb(100, 100, 240, 255);
+        QPen pen(line_color);
+        QBrush brush;
+        brush.setStyle(Qt::SolidPattern);
+        brush.setColor(fill_color);
+        item->setPen(pen);
+        item->setBrush(brush);
+        auto label = new QGraphicsSimpleTextItem(item);
+        label->setBrush(QBrush(QColor(240, 230, 230)));
+        label->setFont(QFont("Helvetica", 14, QFont::Bold));
+        label->setText(QString::fromStdString(coin_name(node.value)));
+        label->setPos(item->rect().x() + 50 - label->boundingRect().width() * 0.5,
+                      item->rect().y() + 50 - label->boundingRect().height() * 0.5);
+        scene->addItem(item);
+        vertex_properties[node.value].drawn = true;
+        auto rotation = angleAxis(radians((float) 180.0 / (float) node.neighbors.size()), vec3(0, 0, 1));
+        auto offset = vec3(0, 150, 0);
+        float i=0;
+        for (auto neighbor:node.neighbors) {
+            draw_node(neighbor, position + ((i*rotation)  * offset), scene, vertex_properties, edge_properties);
+            i+=1;
+        }
+
+    }
     void GraphDrawer::update_graph() {
         using namespace glm;
         auto origin=vec3(0);
@@ -38,38 +78,14 @@ namespace trading::ui {
         qDebug()<<"updating 2";
         auto vertices=graph.get_vertices();
         auto position=origin+up_offset;
-        auto rotation=glm::angleAxis(radians((float)360.0/(float)vertices.size()),vec3(0,0,1));
+
         scene->clear();
 
-        for(auto v:vertices){
-
-                auto item= new QGraphicsEllipseItem();
-                auto fill_color=QColor::fromRgb(240,100,100,255);
-                auto line_color=QColor::fromRgb(60,60,60,255);
-
-
-                if(v==Coins::usd) {
-                    item->setRect(QRect{(int) origin.x, (int) origin.y, 100, 100});
-                }else {
-                    item->setRect(QRect{(int)position.x,(int)position.y,100,100});
-                    position=rotation*position;
-                    fill_color=QColor::fromRgb(100,100,240,255);
-                }
-                QPen pen(line_color);
-                QBrush brush;
-                brush.setStyle(Qt::SolidPattern);
-                brush.setColor(fill_color);
-                item->setPen(pen);
-                item->setBrush(brush);
-                auto label= new QGraphicsSimpleTextItem(item);
-                label->setBrush(QBrush(QColor(240,230,230)));
-                label->setFont(QFont("Helvetica", 14 ,QFont::Bold));
-                label->setText(QString::fromStdString(coin_name(v)));
-                label->setPos(item->rect().x()+50-label->boundingRect().width()*0.5,item->rect().y()+50-label->boundingRect().height()*0.5);
-
-                scene->addItem(item);
-
-        }
+        std::map<std::pair<Coins,Coins>,VertexProperties> edge_properties;
+        std::map<Coins,VertexProperties> vertex_properties;
+        auto [success,root]=graph.get_node(Coins::usd);
+        if(success)
+            draw_node(root.get(),origin,scene,vertex_properties,edge_properties);
         this->update();
         graph_mutex.unlock();
     }
