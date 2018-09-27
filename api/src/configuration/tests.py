@@ -151,7 +151,7 @@ class CurrencyTestCase(TradingBaseTestCase):
         self.assertEqual(201, response.status_code)
         self.assertTrue(('id', 'url', 'name', 'symbol', 'description' in json.loads(response.content)))
 
-class CurrncyQueryTestCase(TradingBaseTestCase):
+class CurrencyQueryTestCase(TradingBaseTestCase):
 
     def setUp(self):
         self.setupUser();
@@ -176,6 +176,65 @@ class CurrncyQueryTestCase(TradingBaseTestCase):
         self.assertEqual(200, response.status_code)
         data = response.json()
         self.assertEqual(data["count"],1)
+    
+class BotConfigAddCurrencyTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+        url = self.get_url_server()+"api/config/bot/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data1 = {
+            "bot_status": True,
+            "time_interval": 3600,
+            "max_lost": "150000.0000000000",
+            "db_verbosity": "medium"
+            }
+        
+        response = requests.post(url,headers=header,json=data1)
+        self.assertEqual(201, response.status_code)
+        self.botConfig_id=response.json()["id"]
+
+
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data2 ={
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "description": "Criptomoneda Bitcoin"
+            }
+
+        response = requests.post(url,headers=header,json=data2)
+        self.assertEqual(201, response.status_code)
+        self.currency_id=response.json()["id"]
+    
+    
+    def test_add_currency_at_config(self):
+        url = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/coins/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "id": self.currency_id,
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        self.assertTrue(('id', 'url', 'bot_status','time_interval','max_lost','db_verbosity','currencies' in json.loads(response.content)))
+
+    
+    def test_delete_currency_at_config(self):
+        url = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/coins/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "id": self.currency_id,
+            }
+
+        response = requests.delete(url,headers=header,json=data)
+        self.assertEqual(204, response.status_code)
+
+    
+
+        
 
 
 
