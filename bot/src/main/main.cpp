@@ -102,38 +102,37 @@ int main(int argc,char* argv[]) {
         listen_thread->start();
 
         auto search_thread= new QThreadLambda(&w,[&running,&graph,&graph_mutex] {
-                                                  using namespace trading;
-                                                  std::vector<std::vector<path_node>> paths;
-                                                  paths.push_back({{Coins::usd},{Coins::btc},{Coins::ltc},{Coins::usd}});
-                                                  paths.push_back({{Coins::usd},{Coins::ltc},{Coins::btc},{Coins::usd}});
-                                                  while(running) {
-                                                      graph_mutex.lock();
-                                                      double initial_invest = 10000;
-                                                      double max_path_gain = 0;
-                                                      std::vector<path_node> max_path;
-                                                      for (auto path:paths) {
-                                                          double current_capital = initial_invest;
-                                                          for (int idx = 0; idx < path.size() - 1; idx++) {
-                                                              if(graph.has_edge(path[idx].coin, path[idx + 1].coin)) {
-                                                                  auto price = graph.get_edge(path[idx].coin, path[idx + 1].coin).price;
-                                                                  current_capital = price == 0 ? 0 : current_capital / price;
-                                                                  path[idx + 1].amount = current_capital;
-                                                                  path[idx + 1].price = price;
-                                                              }
-                                                          }
-                                                          double path_gain = current_capital - initial_invest;
-                                                          if (path_gain > max_path_gain) {
-                                                              max_path_gain = path_gain;
-                                                              max_path = path;
-                                                          }
-                                                      }
-                                                      if (max_path.size() > 0) {
-                                                          register_db(max_path,initial_invest,max_path_gain);
-                                                      }
-                                                      graph_mutex.unlock();
-                                                  }
-                                              }
-        );
+                  using namespace trading;
+                  std::vector<std::vector<path_node>> paths;
+                  paths.push_back({{Coins::usd},{Coins::btc},{Coins::ltc},{Coins::usd}});
+                  paths.push_back({{Coins::usd},{Coins::ltc},{Coins::btc},{Coins::usd}});
+                  while(running) {
+                      graph_mutex.lock();
+                      double initial_invest = 10000;
+                      double max_path_gain = 0;
+                      std::vector<path_node> max_path;
+                      for (auto path:paths) {
+                          double current_capital = initial_invest;
+                          for (int idx = 0; idx < path.size() - 1; idx++) {
+                              if(graph.has_edge(path[idx].coin, path[idx + 1].coin)) {
+                                  auto price = graph.get_edge(path[idx].coin, path[idx + 1].coin).price;
+                                  current_capital = price == 0 ? 0 : current_capital / price;
+                                  path[idx + 1].amount = current_capital;
+                                  path[idx + 1].price = price;
+                              }
+                          }
+                          double path_gain = current_capital - initial_invest;
+                          if (path_gain > max_path_gain) {
+                              max_path_gain = path_gain;
+                              max_path = path;
+                          }
+                      }
+                      if (max_path.size() > 0) {
+                          register_db(max_path,initial_invest,max_path_gain);
+                      }
+                      graph_mutex.unlock();
+                  }
+        });
         search_thread->start();
         auto timer = new QTimer(&w);
         trading::ui::GraphDrawer graph_drawer(&w,graph,graph_mutex);
