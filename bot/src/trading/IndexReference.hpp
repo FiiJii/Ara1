@@ -13,8 +13,8 @@ namespace trading {
         IndexReference(ContainerType  &container, IndexType index):container{container},index{index},valid{true}{};
         IndexReference(ContainerType  &container):valid{false},container{container}{};
 
-        ValueType &operator->() {
-            return container[index];
+        ValueType* operator->() {
+            return &container[index];
         }
         operator ValueType&(){
             return container[index];

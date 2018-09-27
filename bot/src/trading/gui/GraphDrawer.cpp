@@ -31,16 +31,17 @@ namespace trading::ui {
 
     }
     struct VertexProperties{
-        bool drawn;
+        bool drawn{false};
+        QGraphicsItem* item{nullptr};
     };
-    void draw_coin(glm::vec3 position,
+    auto draw_coin(glm::vec3 position,
                    QGraphicsScene* scene,
                    Coins coin){
 
         auto item = new QGraphicsEllipseItem();
         auto fill_color = QColor::fromRgb(100, 100, 240, 255);
         auto line_color = QColor::fromRgb(60, 60, 60, 255);
-        item->setRect(QRect{(int) position.x, (int) position.y, 100, 100});
+        item->setRect(QRect{(int) position.x-50, (int) position.y-50, 100, 100});
         QBrush brush;
         brush.setStyle(Qt::SolidPattern);
         brush.setColor(fill_color);
@@ -53,10 +54,15 @@ namespace trading::ui {
         label->setPos(item->rect().x() + 50 - label->boundingRect().width() * 0.5,
                       item->rect().y() + 50 - label->boundingRect().height() * 0.5);
         scene->addItem(item);
+        return item;
     }
-    void draw_edge(glm::vec3 from,glm::vec3 to,QGraphicsScene* scene, Edge_Data const& data){
+    void draw_edge(glm::vec3 p_from,glm::vec3 p_to,QGraphicsScene* scene, Edge_Data const& data){
         using namespace glm;
+        float radius=50;
+        auto dir=glm::normalize(p_to-p_from);
         auto line_color = QColor::fromRgb(60, 60, 60, 255);
+        auto from =p_from+dir*radius;
+        auto to=p_to-dir*radius;
         auto line = new QGraphicsLineItem(QLineF(from.x,from.y,to.x,to.y));
         line->setPen(QPen(line_color));
         auto label = new QGraphicsSimpleTextItem();
@@ -65,14 +71,15 @@ namespace trading::ui {
         char buffer[100];
         sprintf(buffer,"%f",data.price);
         label->setText(QString::fromStdString(std::string(buffer)));
-        auto position=from+glm::normalize(to-from)*20.0f;
+
+        auto position=from+dir*40.0f;
         label->setPos( position.x,position.y);
         scene->addItem(line);
         scene->addItem(label);
-        std::cout<<from.x<<","<<from.y<<","<<from.z<<std::endl;
-        std::cout<<to.x<<","<<to.y<<","<<to.z<<std::endl;
-        std::cout<<position.x<<","<<position.y<<","<<position.z<<std::endl;
-        std::cout<<buffer<<std::endl;
+        std::cout<<"from:"<<from.x<<","<<from.y<<","<<from.z<<std::endl;
+        std::cout<<"to:"<<to.x<<","<<to.y<<","<<to.z<<std::endl;
+        std::cout<<"position:"<<position.x<<","<<position.y<<","<<position.z<<std::endl;
+        std::cout<<"buffer:"<<buffer<<std::endl;
     }
 
     void draw_node(Graph& graph,
@@ -82,17 +89,21 @@ namespace trading::ui {
                  std::map<Coins,VertexProperties> & vertex_properties,
                  std::map<std::pair<Coins,Coins>,VertexProperties>& edge_properties){
         using namespace glm;
-        if(vertex_properties.find(node.value)==std::end(vertex_properties) ) vertex_properties[node.value]={false};
+        if(vertex_properties.find(node.value)==std::end(vertex_properties) ) vertex_properties[node.value]={.drawn=false,.item=nullptr};
         if(vertex_properties[node.value].drawn)
             return;
-        draw_coin(position,scene,node.value);
+        vertex_properties[node.value].item=draw_coin(position,scene,node.value);
         vertex_properties[node.value].drawn = true;
-        auto rotation = angleAxis(radians((float) 180.0 / (float) node.neighbors.size()), vec3(0, 0, 1));
-        auto offset = vec3(0, 150, 0);
+        auto rotation = angleAxis(radians((float) 360.0 / (float) graph.get_vertices().size()), vec3(0, 0, 1));
+
         float i=0;
-        for (auto neighbor:node.neighbors) {
-            auto neighbor_position=position + ((i*rotation)  * offset);
-            draw_node(graph,neighbor, neighbor_position , scene, vertex_properties, edge_properties);
+        for (auto& neighbor:node.neighbors) {
+            auto neighbor_position=rotation*position;
+            draw_node(graph,neighbor, neighbor_position, scene, vertex_properties, edge_properties);
+            auto neighbor_item=vertex_properties[neighbor->value].item;
+            if(neighbor_item!= nullptr){
+                neighbor_position=vec3(neighbor_item->boundingRect().x()+50,neighbor_item->boundingRect().y()+50,0);
+            }
             draw_edge(position,neighbor_position,scene,graph.get_edge(node.value,neighbor.get().value));
             i+=1;
         }
@@ -111,7 +122,7 @@ namespace trading::ui {
         std::map<Coins,VertexProperties> vertex_properties;
         auto [success,root]=graph.get_node(Coins::usd);
         if(success)
-            draw_node(graph, root.get(),origin,scene,vertex_properties,edge_properties);
+            draw_node(graph, root.get(),glm::vec3(0,200,0),scene,vertex_properties,edge_properties);
         this->update();
         graph_mutex.unlock();
     }
