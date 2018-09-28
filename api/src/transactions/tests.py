@@ -62,7 +62,6 @@ class TransactionQueryTestCase(TradingBaseTestCase):
     def setUp(self):
         self.setupUser();
         self.setupToken();
-        #for i in range(2):
         url = self.get_url_server()+"api/trading/transactions/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data1 = {
