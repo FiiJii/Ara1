@@ -61,6 +61,32 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     if(r.failed())
         std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
 }
+
+std::pair<std::vector<trading::Graph::NodeType>,float> get_max_gain_path(trading::Graph& graph,
+                                                        trading::Graph::NodeType node,
+                                                        std::map<trading::Coins,int>& visited,
+                                                        int capital){
+        visited[node.value]++;
+        if(visited[node.value]==2) {
+            if(node.value==trading::Coins::usd){
+                    return {{node},capital};
+            }
+            return {{},0.0f};
+        }else{
+            std::vector<trading::Graph::NodeType> child_path;
+            float max_gain=0;;
+
+            for(auto& neighbor:node.neighbors) {
+                auto price=graph.get_edge(node.value,neighbor.get().value).price;
+                auto new_capital=price==0?0:capital/price;
+                auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital);
+                if(gain>max_gain)
+                    child_path=temp_path;
+            }
+            return {child_path,max_gain};
+        }
+
+}
 int main(int argc,char* argv[]) {
     okex::Api api;
     bool running=true;
@@ -111,6 +137,7 @@ int main(int argc,char* argv[]) {
                                                       double initial_invest = 10000;
                                                       double max_path_gain = 0;
                                                       std::vector<path_node> max_path;
+
                                                       for (auto path:paths) {
                                                           double current_capital = initial_invest;
                                                           for (int idx = 0; idx < path.size() - 1; idx++) {
