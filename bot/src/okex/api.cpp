@@ -35,9 +35,11 @@ namespace okex{
                     try{
                         nlohmann::json root_node;
                         stringbuff>>root_node;
+                        std::cout<<stringbuff.str()<<std::endl;
                         for(auto node:root_node){
                             auto ticker_node=node;
                             trading::Ticker ticker=ticker_node;
+                            std::cout<<ticker.from<<ticker.to<< ticker.last<<"\n";
                             callback(ticker);
                         }
                         stringbuff.str("");

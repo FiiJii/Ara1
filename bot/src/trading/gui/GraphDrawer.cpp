@@ -76,10 +76,6 @@ namespace trading::ui {
         label->setPos( position.x,position.y);
         scene->addItem(line);
         scene->addItem(label);
-        std::cout<<"from:"<<from.x<<","<<from.y<<","<<from.z<<std::endl;
-        std::cout<<"to:"<<to.x<<","<<to.y<<","<<to.z<<std::endl;
-        std::cout<<"position:"<<position.x<<","<<position.y<<","<<position.z<<std::endl;
-        std::cout<<"buffer:"<<buffer<<std::endl;
     }
 
     void draw_node(Graph& graph,

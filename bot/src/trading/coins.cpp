@@ -10,4 +10,10 @@ namespace trading{
         std::map<std::string,Coins> coin_names{{"btc",btc},{"ltc",ltc},{"usdt",usd},{"eth",eth}};
         return coin_names[name];
     }
+
+    std::ostream &operator<<(std::ostream &os, Coins coin) {
+        os<<coin_name(coin);
+        return os;
+    }
+
 }

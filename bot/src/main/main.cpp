@@ -42,48 +42,67 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     transaction.earnings=earnings;
     transaction.investment=initial_invest;
     transaction.details.reserve(path.size());
+    std::cout<<"Path:Earnings("<<earnings<<") ";
     for(auto idx=0;idx<path.size()-1;idx++){
         Transaction_Detail detail={};
         auto& current_node=path[idx];
-        auto& next_node=path[ +1];
+        auto& next_node=path[idx+1];
         transaction.details.push_back(
                 {.id=0,
                  .url="",
                  .from=current_node.coin,
                  .to=next_node.coin,
-                 .fee=0,
-                 .price=next_node.price,
-                 .amount=next_node.price
+                 .fee=current_node.fees,
+                 .price=current_node.price,
+                 .amount=current_node.amount
                 });
+        std::cout<<trading::coin_name(current_node.coin)<<"->"<<trading::coin_name(next_node.coin)<<",";
     }
+    std::cout<<std::endl;
 
     auto r=api_rest.register_transaction(transaction);
-    if(r.failed())
-        std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
+   // if(r.failed())
+     //   std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
 }
 
-std::pair<std::vector<trading::Graph::NodeType>,float> get_max_gain_path(trading::Graph& graph,
+std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Graph& graph,
                                                         trading::Graph::NodeType node,
                                                         std::map<trading::Coins,int>& visited,
-                                                        int capital){
+                                                        double capital){
         visited[node.value]++;
-        if(visited[node.value]==2) {
-            if(node.value==trading::Coins::usd){
-                    return {{node},capital};
-            }
+        if(visited[node.value]==2&&node.value==trading::Coins::usd){
+                    trading::path_node path_node;
+                    path_node.coin=node.value;
+                    std::cout<<"Capital:"<<capital<<"\n";
+                    return {{path_node},capital};
+        }else if (visited[node.value]>2){
             return {{},0.0f};
         }else{
-            std::vector<trading::Graph::NodeType> child_path;
-            float max_gain=0;;
-
+            std::vector<trading::path_node> max_path;
+            float max_gain=0;
+            trading::path_node max_path_node;
             for(auto& neighbor:node.neighbors) {
+                auto fees=graph.get_edge(node.value,neighbor.get().value).fee;
                 auto price=graph.get_edge(node.value,neighbor.get().value).price;
                 auto new_capital=price==0?0:capital/price;
+                trading::path_node path_node_temp;
+                path_node_temp.amount=new_capital;
+                path_node_temp.price=price;
+                path_node_temp.coin=node.value;
+                path_node_temp.fees=fees;
                 auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital);
-                if(gain>max_gain)
-                    child_path=temp_path;
+                if(gain>max_gain) {
+                    max_path = temp_path;
+                    max_path_node=path_node_temp;
+                    max_gain=gain;
+                }
             }
-            return {child_path,max_gain};
+
+            std::vector<trading::path_node> final_path;
+            final_path.reserve(max_path.size()+1);
+            final_path.push_back(max_path_node);
+            final_path.insert(final_path.end(),max_path.begin(),max_path.end());
+            return {final_path,max_gain};
         }
 
 }
@@ -92,7 +111,8 @@ int main(int argc,char* argv[]) {
     bool running=true;
 
 
-
+    std::locale loc("en_US.utf8");
+    std::locale::global(loc);
 
     try {
 
@@ -121,6 +141,7 @@ int main(int argc,char* argv[]) {
                                        graph.update_edge(t.from, t.to, trading::Edge_Data{.price=t.last});
                                        graph.update_edge(t.to, t.from, trading::Edge_Data{.price=1.0/t.last});
                                        graph_mutex.unlock();
+                                        QThread::yieldCurrentThread();
                                    }
                         );
 
@@ -129,35 +150,20 @@ int main(int argc,char* argv[]) {
 
         auto search_thread= new QThreadLambda(&w,[&running,&graph,&graph_mutex] {
                                                   using namespace trading;
-                                                  std::vector<std::vector<path_node>> paths;
-                                                  paths.push_back({{Coins::usd},{Coins::btc},{Coins::ltc},{Coins::usd}});
-                                                  paths.push_back({{Coins::usd},{Coins::ltc},{Coins::btc},{Coins::usd}});
                                                   while(running) {
                                                       graph_mutex.lock();
                                                       double initial_invest = 10000;
-                                                      double max_path_gain = 0;
-                                                      std::vector<path_node> max_path;
-
-                                                      for (auto path:paths) {
-                                                          double current_capital = initial_invest;
-                                                          for (int idx = 0; idx < path.size() - 1; idx++) {
-                                                              if(graph.has_edge(path[idx].coin, path[idx + 1].coin)) {
-                                                                  auto price = graph.get_edge(path[idx].coin, path[idx + 1].coin).price;
-                                                                  current_capital = price == 0 ? 0 : current_capital / price;
-                                                                  path[idx + 1].amount = current_capital;
-                                                                  path[idx + 1].price = price;
-                                                              }
-                                                          }
-                                                          double path_gain = current_capital - initial_invest;
-                                                          if (path_gain > max_path_gain) {
-                                                              max_path_gain = path_gain;
-                                                              max_path = path;
-                                                          }
-                                                      }
-                                                      if (max_path.size() > 0) {
-                                                          register_db(max_path,initial_invest,max_path_gain);
+                                                      auto [success,root]=graph.get_node(Coins::usd);
+                                                      std::map<trading::Coins,int> visited;
+                                                      for(auto v:graph.get_vertices())
+                                                          visited[v]=0;
+                                                      if(!success) continue;
+                                                      auto [max_path,gain]=get_max_gain_path(graph,root,visited,initial_invest);
+                                                      if (max_path.size() > 0&&gain>initial_invest) {
+                                                          register_db(max_path,initial_invest,gain-initial_invest);
                                                       }
                                                       graph_mutex.unlock();
+                                                      QThread::yieldCurrentThread();
                                                   }
                                               }
         );

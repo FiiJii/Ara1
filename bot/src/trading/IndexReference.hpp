@@ -26,8 +26,8 @@ namespace trading {
             std::swap(index,other.index);
             std::swap(valid,other.valid);
         }
-        ValueType &operator->() {
-            return container[index];
+        ValueType *operator->() {
+            return &container[index];
         }
         operator ValueType&(){
             return container[index];

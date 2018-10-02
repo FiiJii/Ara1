@@ -2,6 +2,7 @@
 #define _OKEX_COINS_HPP_
 #include <string>
 #include <map>
+#include <ostream>
 namespace trading{
      enum Coins{
         btc,
@@ -12,5 +13,6 @@ namespace trading{
 
     std::string coin_name(Coins coin);
     Coins coin_value(std::string name);
+    std::ostream& operator<<(std::ostream& os,Coins);
 }
 #endif

@@ -130,7 +130,6 @@ namespace trading::rest {
         std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_CREATED) {
             auto error = Error{response.getStatus(), response_body};
-            std::cout << error.code << ";;" << error.message << "\n";
             return result<Transaction>{nullptr,error};
         }
         auto response_json=nlohmann::json::parse(response_body);

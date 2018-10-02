@@ -13,6 +13,7 @@ namespace trading {
             Coins coin;
             double amount;
             double price;
+            double fees;
     };
 }
 
