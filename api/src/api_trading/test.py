@@ -9,6 +9,12 @@ class TradingBaseTestCase(APILiveServerTestCase):
 
     def get_url_server(self):
         return self.live_server_url+"/"
+
+    def setupSuperUser(self):
+        self.username = "admin"
+        self.email = "admin@hbo.com"
+        self.password = "you_are_admin"
+        self.user = User.objects.create_superuser(self.username, self.email, self.password)
     
     def setupUser(self):
         self.username = "john"

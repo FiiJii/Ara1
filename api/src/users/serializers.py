@@ -10,10 +10,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             )
 
     username = serializers.CharField(
+            required=True,
             validators=[UniqueValidator(queryset=User.objects.all())]
             )
 
-    password = serializers.CharField(min_length=8)
+    password = serializers.CharField(required=True, min_length=8)
 
     class Meta:
         model = User
