@@ -7,29 +7,6 @@ from django.contrib.auth.models import User
 from transactions.models import Transaction
 
 
-class UserLoginTokenTestCase(TradingBaseTestCase):
-
-    
-    def setUp(self):
-       self.setupUser();
-
-    def test_authentication_without_password(self):
-        url = self.get_url_server()+"api/auth/token/"
-        response = requests.post(url, {"username":"snowman"})
-        self.assertEqual(400, response.status_code)
-    
-    def test_authentication_wrong_password(self):
-        url = self.get_url_server()+"api/auth/token/"
-        data = {"username":self.username,"password":"I_know"}
-        response = requests.post(url, json=data)
-        self.assertEqual(400, response.status_code)
-    
-    def test_authentication_with_valid_data(self):
-        url = self.get_url_server()+"api/auth/token/"
-        data = {"username":self.username,"password": self.password}
-        response = requests.post(url,json=data)
-        self.assertEqual(200, response.status_code)
-        self.assertTrue("access" in json.loads(response.content))
     
 class TransactionsTestCase(TradingBaseTestCase):
 

@@ -9,7 +9,7 @@ from configuration.serializers import *
 
 class BotConfigView(viewsets.ModelViewSet):
     queryset = BotConfig.objects.all()
-    serializer_class = BotConfigSerializers
+    serializer_class = BotConfigSerializer
     
     def perform_create(self, serializer):
         if not can_config_bot():
@@ -26,7 +26,7 @@ class BotConfigView(viewsets.ModelViewSet):
 
         current_config.save()
 
-        serializer = BotConfigSerializers(current_config, context={'request': request})
+        serializer = BotConfigSerializer(current_config, context={'request': request})
         
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
@@ -37,7 +37,7 @@ class BotConfigView(viewsets.ModelViewSet):
 
         current_config.currencies.remove(coin)
 
-        serializer = BotConfigSerializers(current_config, context={'request': request})
+        serializer = BotConfigSerializer(current_config, context={'request': request})
         
         return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
     
@@ -46,7 +46,7 @@ class BotConfigView(viewsets.ModelViewSet):
 
         coins = current_config.currencies.all()
 
-        serializer = CurrencySerializers(coins, many= True, context={'request': request})
+        serializer = CurrencySerializer(coins, many= True, context={'request': request})
         
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
@@ -61,5 +61,5 @@ class BotConfigView(viewsets.ModelViewSet):
 
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
-    serializer_class = CurrencySerializers
+    serializer_class = CurrencySerializer
 

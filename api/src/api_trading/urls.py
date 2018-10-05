@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^api/auth/token/refresh/$', TokenRefreshView.as_view(), name='token_refresh'),
     url(r'^api/auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/', include('transactions.urls')),
-    url(r'^api/', include('configuration.urls'))
+    url(r'^api/', include('configuration.urls')),
+    url(r'^api/', include('users.urls'))
 ]
 
