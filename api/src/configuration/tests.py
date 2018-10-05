@@ -99,6 +99,18 @@ class BotConfigOtherTestCase(TradingBaseTestCase):
         response = requests.patch(url,headers=header,json=data)
         self.assertEqual(200, response.status_code)
         self.assertEqual(json.loads(response.content)["max_lost"],"250000.0000000000")
+        
+    def test_choice_invalid_bot_configuration_verbosity_field(self):
+
+        url = self.get_url_server()+"api/config/bot/"+str(self.botConfig_id)+"/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "db_verbosity": "mediummo"
+            }
+        
+        response = requests.patch(url,headers=header,json=data)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(json.loads(response.content)["db_verbosity"],["\"mediummo\" is not a valid choice."])
 
     
 class BotConfigQueryTestCase(TradingBaseTestCase):
