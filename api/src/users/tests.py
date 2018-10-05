@@ -52,6 +52,46 @@ class UserRegisterSuccessTestCase(TradingBaseTestCase):
         response = requests.post(url,headers=header,json=data)
         self.assertEqual(201, response.status_code)
 
+class UserUpdateTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupSuperUser();
+        self.setupToken();
+        
+        url = self.get_url_server()+"api/account/users/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "username":"lordsnow",
+            "password":"123456789",
+            "first_name":"John",
+            "last_name":"Snow",
+            "email":"john@snow.com",
+            "is_staff": True,
+            "is_superuser": False,
+            "is_active": True
+            }
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        self.user_id=response.json()["id"]
+
+    def test_update_user_already_registered(self):
+        url = self.get_url_server()+"api/account/users/"+str(self.user_id)+"/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data = {
+            "username":"bastardo",
+            "password":"winterfel",
+            "first_name":"john",
+            "last_name":"snow",
+            "email":"johnsnow@got.com",
+            "is_staff": True,
+            "is_superuser": True,
+            "is_active": True
+            }
+        response = requests.put(url,headers=header,json=data)
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(('id', 'url', 'username', 'password', 'first_name', 'last_name', 'email', 'is_staff', 'is_superuser', 'is_active' in json.loads(response.content)))
+
+
 class UserRegisterWithErrorsTestCase(TradingBaseTestCase):
 
     def setUp(self):
@@ -196,7 +236,7 @@ class ChangePasswordTestCase(TradingBaseTestCase):
         response = requests.post(url,headers=header,json=data)
         self.assertEqual(201, response.status_code)
         self.user_id=response.json()["id"]
-        print(self.user_id)
+        #print(self.user_id)
 
     def test_change_password_sucessfully(self):
         url = self.get_url_server()+"api/account/users/"+str(self.user_id)+"/change_password/"
