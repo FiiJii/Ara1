@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from configuration.serializers import *
+from api_trading.pagination import OptionalPagination
 
 
 class BotConfigView(viewsets.ModelViewSet):
@@ -62,4 +63,6 @@ class BotConfigView(viewsets.ModelViewSet):
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
+    pagination_class = OptionalPagination
+    
 
