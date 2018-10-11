@@ -8,6 +8,7 @@ from rest_framework.decorators import list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from api_trading.pagination import OptionalPagination
 
 
 class TransactionView(viewsets.ModelViewSet):
@@ -15,8 +16,8 @@ class TransactionView(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,filters.SearchFilter,)
     search_fields = ('details__parity',)
     serializer_class = TransactionSerializer
-    filterset_class = TransactionDateRangeFilter
-    
+    filterset_class = TransactionDateRangeFilter    
+    pagination_class = OptionalPagination
 
     @list_route(methods=['get'])
     def max_earnings(self,request):
