@@ -32,16 +32,14 @@ class CurrencyFilter(filters.FilterSet):
 
     def my_custom_filter(self, queryset, name, value):
 
-        values = value or []
-
         q_list= []
 
-        for v in values:
+        for v in value:
           
             q_list.append(Q(parity__endswith = v))
 
             #q_list = [Q(parity__endswith = v), Q(parity__endswith = v)]
             
-            qs = TransactionDetail.objects.filter(reduce(operator.or_, q_list))
+        qs = TransactionDetail.objects.filter(reduce(operator.or_, q_list))
                         
         return qs
