@@ -1,25 +1,9 @@
 from transactions.models import *
 from django_filters import rest_framework as filters
-from django_filters import DateRangeFilter, DateTimeFilter, IsoDateTimeFilter
-
-
-class MultiValueCharFilter(filters.BaseCSVFilter, filters.CharFilter):
-    def filter(self, qs, value):
-        # value is either a list or an 'empty' value
-        values = value or []
-
-        for value in values:
-            qs = super(MultiValueCharFilter, self).filter(qs, value)
-
-        return qs
-
-class CurrencyFilter(filters.FilterSet):
-    currency = MultiValueCharFilter(field_name='parity', lookup_expr='contains')
-
-    class Meta:
-        model = TransactionDetail
-        fields = ['currency',]
-
+from django_filters import DateRangeFilter, DateTimeFilter, IsoDateTimeFilter, CharFilter
+from functools import reduce
+import operator
+from django.db.models import Q
 
 class TransactionDateFilter(filters.FilterSet):
     
@@ -37,3 +21,27 @@ class TransactionDateRangeFilter(filters.FilterSet):
     class Meta:
         model = Transaction
         fields = ['date_range', 'start_date', 'end_date']
+
+
+class CurrencyFilter(filters.FilterSet):
+    currency = CharFilter(method ='my_custom_filter')
+
+    class Meta:
+        model = TransactionDetail
+        fields = ['currency']
+
+    def my_custom_filter(self, queryset, name, value):
+
+        values = value or []
+
+        q_list= []
+
+        for v in values:
+          
+            q_list.append(Q(parity__endswith = v))
+
+            #q_list = [Q(parity__endswith = v), Q(parity__endswith = v)]
+            
+            qs = TransactionDetail.objects.filter(reduce(operator.or_, q_list))
+                        
+        return qs
