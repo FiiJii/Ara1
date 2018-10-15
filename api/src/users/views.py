@@ -4,11 +4,13 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from users.serializers import *
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from api_trading.pagination import OptionalPagination
 
 class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
+    pagination_class = OptionalPagination
 
     def perform_create(self, serializer):
         user = serializer.save()
