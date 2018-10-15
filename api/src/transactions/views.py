@@ -13,10 +13,8 @@ from api_trading.pagination import OptionalPagination
 
 class TransactionView(viewsets.ModelViewSet):
     queryset = Transaction.objects.all().order_by('-creation_date')
-    filter_backends = (DjangoFilterBackend,filters.SearchFilter,)
-    search_fields = ('details__parity',)
     serializer_class = TransactionSerializer
-    filterset_class = TransactionDateRangeFilter    
+    filterset_class = TransactionDateRangeFilter   
     pagination_class = OptionalPagination
 
     @list_route(methods=['get'])
