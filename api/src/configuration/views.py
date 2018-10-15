@@ -4,6 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 from configuration.serializers import *
 from api_trading.pagination import OptionalPagination
 
@@ -11,6 +12,9 @@ from api_trading.pagination import OptionalPagination
 class BotConfigView(viewsets.ModelViewSet):
     queryset = BotConfig.objects.all()
     serializer_class = BotConfigSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('bot_status',)
+    pagination_class = OptionalPagination
     
     def perform_create(self, serializer):
         if not can_config_bot():
@@ -64,5 +68,11 @@ class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
     pagination_class = OptionalPagination
+
+    def perform_create(self, serializer):
+        qs = self.queryset.filter(symbol=self.request.data['symbol'])
+        if qs.exists():
+            raise ValidationError('Currency already exists')
+        serializer.save()
     
 

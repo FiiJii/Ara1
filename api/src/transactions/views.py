@@ -31,10 +31,10 @@ class TransactionView(viewsets.ModelViewSet):
 
 class TransactionDetailView(viewsets.ModelViewSet):
     queryset = TransactionDetail.objects.all()
+    filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
     filter_fields = ('transaction','parity',)
     search_fields = ('parity',)
     ordering_fields=('id',)
-    filter_backends = (DjangoFilterBackend,filters.SearchFilter,filters.OrderingFilter)
     serializer_class = TransactionDetailSerializer
     filterset_class = CurrencyFilter
-   
+    pagination_class = OptionalPagination    
