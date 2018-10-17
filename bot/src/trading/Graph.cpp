@@ -71,7 +71,7 @@ namespace trading {
     std::pair<bool,VectorReference<Graph::NodeType>> trading::Graph::get_node(trading::Coins coin) {
         auto iter=std::find_if(std::begin(nodes),std::end(nodes),[coin](auto a){return a.value==coin;});
         if(iter!=std::end(nodes)){
-            return  std::make_pair(true,VectorReference<GraphNode<Coins, VectorReference>>{nodes,std::distance(std::begin(nodes),iter)});
+            return  std::make_pair(true,VectorReference<GraphNode<Coins, VectorReference>>{nodes, static_cast<size_t >(std::distance(std::begin(nodes),iter))});
         }
         return std::make_pair(false,VectorReference<GraphNode<Coins, VectorReference>>{nodes});
     }

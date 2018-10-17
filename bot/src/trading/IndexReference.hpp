@@ -43,7 +43,7 @@ namespace trading {
     };
 
     template<typename T>
-    using VectorReference =IndexReference<T, std::vector<T>, long >;
+    using VectorReference =IndexReference<T, std::vector<T>, size_t >;
 
 }
 #endif //TRADING_INDEXREFERENCE_HPP

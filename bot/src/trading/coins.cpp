@@ -16,4 +16,18 @@ namespace trading{
         return os;
     }
 
+    Symbol symbol_value(std::string name)
+    {
+        Symbol symbol;
+        auto separator_pos=name.find('_');
+        symbol.from=coin_value(name.substr(separator_pos+1,name.length()-separator_pos));
+        symbol.to=coin_value(name.substr(0,separator_pos));
+        return symbol;
+
+    }
+
+    std::string symbol_name(Symbol symbol) {
+        return coin_name(symbol.to)+"_"+coin_name(symbol.from);
+    }
+
 }

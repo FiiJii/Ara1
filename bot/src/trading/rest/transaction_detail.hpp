@@ -10,6 +10,13 @@
 
 
 namespace  trading::rest {
+    enum class Action{
+        Buy,
+        Sell
+    };
+    std::string action_name(Action action);
+
+
     class Transaction_Detail {
         public:
             int id;
@@ -18,6 +25,7 @@ namespace  trading::rest {
             Coins to;
             double fee;
             double price;
+            Action action;
             double amount;
             int okex_oder;
     };

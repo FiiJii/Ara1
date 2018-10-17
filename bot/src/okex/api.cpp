@@ -15,7 +15,7 @@
 #include <sstream>
 #include <string>
 #include "nlohmann/json.hpp"
-
+#include "symbols.hpp"
 
 using namespace Poco;
 namespace okex{
@@ -63,8 +63,20 @@ namespace okex{
         socket=std::make_unique<Poco::Net::WebSocket>(session,request,response);
     }
     Api::Api(){
+        for(auto s:okex::symbols) {
+            this->symbols[s]=true;
+        }
         connect();
 
+    }
+
+    trading::Symbol Api::get_supported_symbol_for(trading::Symbol symbol) {
+
+        if(this->symbols.count(trading::symbol_name(symbol))>0)
+            return symbol;
+        trading::Symbol inverted_symbol={symbol.to,symbol.to};
+        if(this->symbols.count(trading::symbol_name(inverted_symbol))>0)
+            return inverted_symbol;
     }
 }
 

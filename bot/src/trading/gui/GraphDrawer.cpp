@@ -85,7 +85,10 @@ namespace trading::ui {
                  std::map<Coins,VertexProperties> & vertex_properties,
                  std::map<std::pair<Coins,Coins>,VertexProperties>& edge_properties){
         using namespace glm;
-        if(vertex_properties.find(node.value)==std::end(vertex_properties) ) vertex_properties[node.value]={.drawn=false,.item=nullptr};
+        VertexProperties properties;
+        properties.drawn=false;
+        properties.item= nullptr;
+        if(vertex_properties.find(node.value)==std::end(vertex_properties) ) vertex_properties[node.value]=properties;
         if(vertex_properties[node.value].drawn)
             return;
         vertex_properties[node.value].item=draw_coin(position,scene,node.value);

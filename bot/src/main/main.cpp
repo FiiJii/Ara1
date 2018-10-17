@@ -44,25 +44,27 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     transaction.details.reserve(path.size());
     std::cout<<"Path:Earnings("<<earnings<<") ";
     for(auto idx=0;idx<path.size()-1;idx++){
-        Transaction_Detail detail={};
+
         auto& current_node=path[idx];
         auto& next_node=path[idx+1];
-        transaction.details.push_back(
-                {.id=0,
-                 .url="",
-                 .from=current_node.coin,
-                 .to=next_node.coin,
-                 .fee=current_node.fees,
-                 .price=current_node.price,
-                 .amount=current_node.amount
-                });
+
+        Transaction_Detail detail={};
+        detail.id=0;
+        detail.url="";
+        detail.from=current_node.coin;
+        detail.to=next_node.coin;
+        detail.fee=current_node.fees;
+        detail.price=current_node.price;
+        detail.amount=current_node.amount;
+
+        transaction.details.push_back(detail);
         std::cout<<trading::coin_name(current_node.coin)<<"->"<<trading::coin_name(next_node.coin)<<",";
     }
     std::cout<<std::endl;
 
     auto r=api_rest.register_transaction(transaction);
-   // if(r.failed())
-     //   std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
+    if(r.failed())
+        std::cout<<"***Error"<<r.get_error()->code<<r.get_error()->message<<"\n";
 }
 
 std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Graph& graph,
@@ -75,16 +77,19 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
                     path_node.coin=node.value;
                     std::cout<<"Capital:"<<capital<<"\n";
                     return {{path_node},capital};
-        }else if (visited[node.value]>2){
+        }else if (visited[node.value]>1){
             return {{},0.0f};
         }else{
             std::vector<trading::path_node> max_path;
             float max_gain=0;
             trading::path_node max_path_node;
             for(auto& neighbor:node.neighbors) {
-                auto fees=graph.get_edge(node.value,neighbor.get().value).fee;
+                auto fees_rate=0.0015f;
                 auto price=graph.get_edge(node.value,neighbor.get().value).price;
                 auto new_capital=price==0?0:capital/price;
+                auto fees=new_capital*fees_rate;
+                new_capital=new_capital-fees;
+
                 trading::path_node path_node_temp;
                 path_node_temp.amount=new_capital;
                 path_node_temp.price=price;
@@ -107,24 +112,33 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
 
 }
 int main(int argc,char* argv[]) {
+       std::cout<<"Starting "<<std::endl;
     okex::Api api;
     bool running=true;
 
-
-    std::locale loc("en_US.utf8");
-    std::locale::global(loc);
+     std::locale::global(std::locale::classic());
 
     try {
 
-        api.register_for_ticker(trading::Coins::btc, trading::Coins::ltc);
-        api.register_for_ticker(trading::Coins::usd, trading::Coins::btc);
-        api.register_for_ticker(trading::Coins::usd, trading::Coins::ltc);
-
+        std::cout<<"Inicializing API"<<std::endl;
+        trading::rest::api api_rest("api-trading.arawato.co",80);
+        std::cout<<"Login"<<std::endl;
+        api_rest.login("trading_bot","trading");
+        std::cout<<"Get Config"<<std::endl;
+        auto result=api_rest.get_bot_config();
+        std::cout<<"Building Graph"<<std::endl;
+        if(result.failed()) throw  std::runtime_error(result.get_error().value().message);
+        auto bot_config=result.get_value().value();
+        for(auto coin_a:bot_config.coins) {
+            for (auto coin_b:bot_config.coins){
+                if(coin_a!=coin_b)
+                    api.register_for_ticker(coin_a, coin_b);
+            }
+        }
         auto end_time = std::chrono::high_resolution_clock::now();
-        trading::Graph graph{{trading::Coins::ltc,
-                              trading::Coins::btc,
-                              trading::Coins::usd}
-                             };
+        std::cout<<"Building Graph\n";
+        trading::Graph graph{bot_config.coins};
+
         std::mutex graph_mutex;
 
 
@@ -138,18 +152,23 @@ int main(int argc,char* argv[]) {
         auto listen_thread=new QThreadLambda(&w,[&api,&graph,&graph_mutex](){
                         api.listen([&graph,&graph_mutex](trading::Ticker t) {
                                        graph_mutex.lock();
-                                       graph.update_edge(t.from, t.to, trading::Edge_Data{.price=t.last});
-                                       graph.update_edge(t.to, t.from, trading::Edge_Data{.price=1.0/t.last});
+                                       trading::Edge_Data edge;
+                                       trading::Edge_Data inverse_edge;
+                                       edge.price=t.last;
+                                       inverse_edge.price=1.0/t.last;
+                                       graph.update_edge(t.from, t.to, edge);
+                                       graph.update_edge(t.to, t.from, inverse_edge);
                                        graph_mutex.unlock();
                                         QThread::yieldCurrentThread();
                                    }
                         );
 
                 });
-        listen_thread->start();
+       // listen_thread->start();
 
         auto search_thread= new QThreadLambda(&w,[&running,&graph,&graph_mutex] {
                                                   using namespace trading;
+                                                  std::locale::global(std::locale::classic());
                                                   while(running) {
                                                       graph_mutex.lock();
                                                       double initial_invest = 10000;
@@ -167,22 +186,25 @@ int main(int argc,char* argv[]) {
                                                   }
                                               }
         );
-        search_thread->start();
+        //search_thread->start();
         auto timer = new QTimer(&w);
         trading::ui::GraphDrawer graph_drawer(&w,graph,graph_mutex);
         graph_drawer.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
         w.connect(timer,&QTimer::timeout,&graph_drawer,& trading::ui::GraphDrawer::update_graph);
         auto layout= new QVBoxLayout();
-
         layout->setSizeConstraint(QLayout::SetMaximumSize);
         layout->addWidget(&graph_drawer,1);
         w.setLayout(layout);
         timer->start(500);
+
         w.show();
+        std::cout<<"Inicializado\n";
         qt_app.exec();
 
 
 
+    }catch (std::exception e) {
+        std::cout << e.what() << std::endl;
     } catch (std::string& e) {
         std::cout << e << std::endl;
     }

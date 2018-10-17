@@ -8,7 +8,7 @@
 
 #include <string>
 #include <optional>
-#include <bits/unique_ptr.h>
+#include <memory>
 #include "result.hpp"
 #include "Poco/Net/HTTPSClientSession.h"
 #include "transaction.hpp"
