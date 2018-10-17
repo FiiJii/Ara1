@@ -46,15 +46,15 @@ class TransactionDetailView(viewsets.ModelViewSet):
     @list_route(methods=['get'])
     def averages(self, request):
 
-        average_Tx_last_60second = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60)).aggregate(total=Avg("amount"))["total"] or 0;
+        average_Tx_last_60second = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60))).aggregate(total=Avg("amount"))["total"] or 0;
 
-        average_Tx_last_hour = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1)).aggregate(total=Avg("amount"))["total"] or 0;
+        average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;
         
-        average_tx_last_6hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6)).aggregate(total=Avg("amount"))["total"] or 0;
+        average_tx_last_6hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6))).aggregate(total=Avg("amount"))["total"] or 0;
 
-        average_tx_last_12hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12)).aggregate(total=Avg("amount"))["total"] or 0;
+        average_tx_last_12hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12))).aggregate(total=Avg("amount"))["total"] or 0;
 
-        average_tx_last_24hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24)).aggregate(total=Avg("amount"))["total"] or 0;
+        average_tx_last_24hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24))).aggregate(total=Avg("amount"))["total"] or 0;
       
         data = {
             "average_tx_last_60second": average_Tx_last_60second,
