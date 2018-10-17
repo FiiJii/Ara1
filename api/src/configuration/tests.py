@@ -163,6 +163,8 @@ class CurrencyTestCase(TradingBaseTestCase):
         self.assertEqual(201, response.status_code)
         self.assertTrue(('id', 'url', 'name', 'symbol', 'description' in json.loads(response.content)))
 
+
+
 class CurrencyQueryTestCase(TradingBaseTestCase):
 
     def setUp(self):
@@ -188,6 +190,40 @@ class CurrencyQueryTestCase(TradingBaseTestCase):
         self.assertEqual(200, response.status_code)
         data = response.json()
         self.assertEqual(data["count"],1)
+
+
+class CurrrencyOtherTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "description": "Criptomoneda Bitcoin"
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        
+
+    def test_register_validation_currency_already_existing(self):
+        
+        url = self.get_url_server()+"api/config/currency/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Bitcoin",
+                "symbol": "BTC",
+                "description": "Criptomoneda Bitcoin"
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(400, response.status_code)
+        self.assertTrue("Currency already exists" in json.loads(response.content))
+
     
 class BotConfigAddCurrencyTestCase(TradingBaseTestCase):
 

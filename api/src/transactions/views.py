@@ -9,6 +9,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from api_trading.pagination import OptionalPagination
+from django.db.models import Sum, Avg
+import datetime
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class TransactionView(viewsets.ModelViewSet):
@@ -37,4 +41,27 @@ class TransactionDetailView(viewsets.ModelViewSet):
     ordering_fields=('id',)
     serializer_class = TransactionDetailSerializer
     filterset_class = CurrencyFilter
-    pagination_class = OptionalPagination    
+    pagination_class = OptionalPagination 
+
+    @list_route(methods=['get'])
+    def averages(self, request):
+
+        average_Tx_last_60second = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60)).aggregate(total=Avg("amount"))["total"] or 0;
+
+        average_Tx_last_hour = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1)).aggregate(total=Avg("amount"))["total"] or 0;
+        
+        average_tx_last_6hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6)).aggregate(total=Avg("amount"))["total"] or 0;
+
+        average_tx_last_12hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12)).aggregate(total=Avg("amount"))["total"] or 0;
+
+        average_tx_last_24hours=TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24)).aggregate(total=Avg("amount"))["total"] or 0;
+      
+        data = {
+            "average_tx_last_60second": average_Tx_last_60second,
+            "average_tx_last_hour": average_Tx_last_hour,
+            "average_tx_last_6hours": average_tx_last_6hours,
+            "average_tx_last_12hours": average_tx_last_12hours,
+            "average_tx_last_24hours": average_tx_last_24hours,
+        }
+        
+        return Response(data=data);   
