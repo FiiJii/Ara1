@@ -7,7 +7,8 @@
 
 
 #include <string>
-
+#include <vector>
+#include "coins.hpp"
 class Bot_Config {
 public:
     long id;
@@ -15,6 +16,7 @@ public:
     bool bot_status;
     long time_interval;
     double max_lost;
+    std::vector<trading::Coins> coins;
 };
 
 

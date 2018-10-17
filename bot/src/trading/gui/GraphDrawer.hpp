@@ -9,7 +9,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <Graph.hpp>
-#include <bits/unique_ptr.h>
+#include <memory>
 #include <QTimer>
 #include <atomic>
 #include <mutex>

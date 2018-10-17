@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include "utils.hpp"
 namespace trading{
     void to_json(nlohmann::json& j, const Ticker& ticker) {
         j = nlohmann::json{
@@ -14,13 +15,6 @@ namespace trading{
             {"low", ticker.low},
             {"sell", ticker.sell},
         };
-    }
-    double s2d(const std::string &str, const std::locale &loc=std::locale::classic()){
-            double val=0;
-            std::stringstream ss(str);
-            ss.imbue(loc);
-            ss>>val;
-            return val; //nothing went wrong
     }
 
     void from_json(const nlohmann::json& j, Ticker& ticker) {    

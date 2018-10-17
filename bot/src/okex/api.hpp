@@ -7,6 +7,8 @@
 #include "Poco/Net/WebSocket.h"
 #include <functional>
 #include <memory>
+#include <map>
+#include "coins.hpp"
 namespace okex{
     class Api{
         public:
@@ -16,8 +18,10 @@ namespace okex{
            //@param [in] to the buyed coin
            void register_for_ticker(trading::Coins from,trading::Coins to);
            void listen(std::function<void(trading::Ticker)> callback);
+           trading::Symbol  get_supported_symbol_for(trading::Symbol symbol);
         private:
            std::unique_ptr<Poco::Net::WebSocket> socket;
+           std::map<std::string,bool> symbols;
            void connect();
 
     };

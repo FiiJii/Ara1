@@ -11,8 +11,18 @@ namespace trading{
         eth  
     };
 
+
     std::string coin_name(Coins coin);
-    Coins coin_value(std::string name);
+    Coins   coin_value(std::string name);
     std::ostream& operator<<(std::ostream& os,Coins);
+
+
+    struct Symbol{
+        Coins from;
+        Coins to;
+    };
+    Symbol symbol_value(std::string name);
+    std::string symbol_name(Symbol symbol);
+
 }
 #endif
