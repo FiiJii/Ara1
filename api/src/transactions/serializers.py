@@ -4,7 +4,7 @@ from transactions.models import Transaction, TransactionDetail
 class TransactionNestedDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TransactionDetail
-        fields = ('parity', 'amount', 'commission')
+        fields = ('parity', 'amount', 'commission','action')
 
 class TransactionSerializer(serializers.HyperlinkedModelSerializer):
     details = TransactionNestedDetailSerializer(many=True, read_only=True)

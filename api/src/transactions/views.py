@@ -45,7 +45,7 @@ class TransactionDetailView(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def averages(self, request):
-
+        
         average_Tx_last_60second = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60))).aggregate(total=Avg("amount"))["total"] or 0;
 
         average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;
