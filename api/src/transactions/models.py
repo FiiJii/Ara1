@@ -19,3 +19,4 @@ class TransactionDetail(models.Model):
     action = models.CharField(max_length=6,choices=ACTION_CHOICES)
     okex_order = models.IntegerField(default=0)
     transaction_order = models.IntegerField(default=0)
+    creation_date = models.DateTimeField(auto_now_add=True)
