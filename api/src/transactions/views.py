@@ -13,7 +13,8 @@ from django.db.models import Sum, Avg
 import datetime
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-
+from configuration.models import *
+import requests
 
 class TransactionView(viewsets.ModelViewSet):
     queryset = Transaction.objects.all().order_by('-creation_date')
@@ -45,23 +46,32 @@ class TransactionDetailView(viewsets.ModelViewSet):
 
     @list_route(methods=['get'])
     def averages(self, request):
+        data=[]
+        for coin in Currency.objects.all():
+            average_Tx_last_60second = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60))).aggregate(total=Avg("amount"))["total"] or 0;
+
+            average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;
+            
+            average_tx_last_6hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6))).aggregate(total=Avg("amount"))["total"] or 0;
+
+            average_tx_last_12hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12))).aggregate(total=Avg("amount"))["total"] or 0;
+
+            average_tx_last_24hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24))).aggregate(total=Avg("amount"))["total"] or 0;
+            response=requests.get("https://www.okex.com/api/v1/ticker.do?symbol="+coin.symbol);
+            ticker=response.json()["ticker"];
+            coin_data = {
+                "symbol":coin.symbol,
+                "name":coin.name,
+                "last":ticker["last"],
+                "bid" :ticker["buy"],
+                "volume" :ticker["vol"],
+                "average_tx_last_60second": average_Tx_last_60second,
+                "average_tx_last_hour": average_Tx_last_hour,
+                "average_tx_last_6hours": average_tx_last_6hours,
+                "average_tx_last_12hours": average_tx_last_12hours,
+                "average_tx_last_24hours": average_tx_last_24hours,
+            }
+            data.append(coin_data);
         
-        average_Tx_last_60second = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60))).aggregate(total=Avg("amount"))["total"] or 0;
-
-        average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;
-        
-        average_tx_last_6hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6))).aggregate(total=Avg("amount"))["total"] or 0;
-
-        average_tx_last_12hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12))).aggregate(total=Avg("amount"))["total"] or 0;
-
-        average_tx_last_24hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24))).aggregate(total=Avg("amount"))["total"] or 0;
-      
-        data = {
-            "average_tx_last_60second": average_Tx_last_60second,
-            "average_tx_last_hour": average_Tx_last_hour,
-            "average_tx_last_6hours": average_tx_last_6hours,
-            "average_tx_last_12hours": average_tx_last_12hours,
-            "average_tx_last_24hours": average_tx_last_24hours,
-        }
         
         return Response(data=data);   
