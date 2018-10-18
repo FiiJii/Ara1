@@ -15,4 +15,4 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
 class TransactionDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TransactionDetail
-        fields =('id','url', 'transaction', 'parity', 'amount', 'commission','okex_order','transaction_order')
+        fields =('id','url', 'transaction', 'parity', 'action','amount', 'commission','okex_order','transaction_order')
