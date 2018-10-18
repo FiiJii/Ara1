@@ -88,6 +88,7 @@ namespace trading::rest {
         char fee_buffer[40];
         sprintf(amount_buffer,"%.10F",detail.amount);
         sprintf(fee_buffer,"%.10F",detail.fee);
+
         nlohmann::json json={ {"transaction",transaction.url},
                               {"parity",coin_name(detail.to)+"_"+coin_name(detail.from)},
                               {"amount", amount_buffer},

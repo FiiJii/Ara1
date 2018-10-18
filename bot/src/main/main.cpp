@@ -42,21 +42,22 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     transaction.earnings=earnings;
     transaction.investment=initial_invest;
     transaction.details.reserve(path.size());
+    okex::Api api_okex;
     std::cout<<"Path:Earnings("<<earnings<<") ";
     for(auto idx=0;idx<path.size()-1;idx++){
 
         auto& current_node=path[idx];
         auto& next_node=path[idx+1];
-
+        auto symbol=api_okex.get_supported_symbol_for(trading::Symbol{current_node.coin,next_node.coin});
         Transaction_Detail detail={};
         detail.id=0;
         detail.url="";
-        detail.from=current_node.coin;
-        detail.to=next_node.coin;
+        detail.from=symbol.from;
+        detail.to=symbol.to;
         detail.fee=current_node.fees;
         detail.price=current_node.price;
         detail.amount=current_node.amount;
-
+        detail.action=current_node.coin==symbol.from?trading::rest::Action::Buy:trading::rest::Action::Buy;
         transaction.details.push_back(detail);
         std::cout<<trading::coin_name(current_node.coin)<<"->"<<trading::coin_name(next_node.coin)<<",";
     }
@@ -70,7 +71,7 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
 std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Graph& graph,
                                                         trading::Graph::NodeType node,
                                                         std::map<trading::Coins,int>& visited,
-                                                        double capital){
+                                                        double capital,int depth=0){
         visited[node.value]++;
         if(visited[node.value]==2&&node.value==trading::Coins::usd){
                     trading::path_node path_node;
@@ -84,7 +85,7 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
             float max_gain=0;
             trading::path_node max_path_node;
             for(auto& neighbor:node.neighbors) {
-                auto fees_rate=0.0015f;
+                auto fees_rate=0.02f/100.0f;
                 auto price=graph.get_edge(node.value,neighbor.get().value).price;
                 auto new_capital=price==0?0:capital/price;
                 auto fees=new_capital*fees_rate;
@@ -95,7 +96,10 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
                 path_node_temp.price=price;
                 path_node_temp.coin=node.value;
                 path_node_temp.fees=fees;
-                auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital);
+                for(int spacei=0;spacei<depth;spacei++)
+                    std::cout<<"---";
+                std::cout<<neighbor.get().value<<":"<<new_capital<<std::endl;
+                auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital,depth+1);
                 if(gain>max_gain) {
                     max_path = temp_path;
                     max_path_node=path_node_temp;
@@ -130,7 +134,9 @@ int main(int argc,char* argv[]) {
         if(result.failed()) throw  std::runtime_error(result.get_error().value().message);
         auto bot_config=result.get_value().value();
         for(auto coin_a:bot_config.coins) {
+
             for (auto coin_b:bot_config.coins){
+                std::cout<<"adding coin "<<coin_a<<":"<<coin_b<<std::endl;
                 if(coin_a!=coin_b)
                     api.register_for_ticker(coin_a, coin_b);
             }
@@ -154,8 +160,8 @@ int main(int argc,char* argv[]) {
                                        graph_mutex.lock();
                                        trading::Edge_Data edge;
                                        trading::Edge_Data inverse_edge;
-                                       edge.price=t.last;
-                                       inverse_edge.price=1.0/t.last;
+                                       edge.price=t.sell;
+                                       inverse_edge.price=1.0/t.buy;
                                        graph.update_edge(t.from, t.to, edge);
                                        graph.update_edge(t.to, t.from, inverse_edge);
                                        graph_mutex.unlock();
@@ -164,20 +170,21 @@ int main(int argc,char* argv[]) {
                         );
 
                 });
-       // listen_thread->start();
-
+        listen_thread->start();
         auto search_thread= new QThreadLambda(&w,[&running,&graph,&graph_mutex] {
                                                   using namespace trading;
                                                   std::locale::global(std::locale::classic());
                                                   while(running) {
                                                       graph_mutex.lock();
-                                                      double initial_invest = 10000;
+                                                      double initial_invest = 100000;
                                                       auto [success,root]=graph.get_node(Coins::usd);
                                                       std::map<trading::Coins,int> visited;
                                                       for(auto v:graph.get_vertices())
                                                           visited[v]=0;
                                                       if(!success) continue;
+                                                      std::cout<<"Start Search\n";
                                                       auto [max_path,gain]=get_max_gain_path(graph,root,visited,initial_invest);
+                                                      std::cout<<"End Search"<<std::endl;
                                                       if (max_path.size() > 0&&gain>initial_invest) {
                                                           register_db(max_path,initial_invest,gain-initial_invest);
                                                       }
@@ -186,7 +193,7 @@ int main(int argc,char* argv[]) {
                                                   }
                                               }
         );
-        //search_thread->start();
+        search_thread->start();
         auto timer = new QTimer(&w);
         trading::ui::GraphDrawer graph_drawer(&w,graph,graph_mutex);
         graph_drawer.setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -203,10 +210,8 @@ int main(int argc,char* argv[]) {
 
 
 
-    }catch (std::exception e) {
+    }catch (std::exception& e) {
         std::cout << e.what() << std::endl;
-    } catch (std::string& e) {
-        std::cout << e << std::endl;
     }
     return 0;
 }

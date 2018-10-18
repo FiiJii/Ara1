@@ -61,6 +61,7 @@ namespace okex{
         Net::HTTPRequest request(Net::HTTPRequest::HTTP_GET,endpoint,Net::HTTPRequest::HTTP_1_1);
         Net::HTTPResponse response;
         socket=std::make_unique<Poco::Net::WebSocket>(session,request,response);
+        std::cout<<"hand shake:"<<response.getStatus()<<std::endl;
     }
     Api::Api(){
         for(auto s:okex::symbols) {

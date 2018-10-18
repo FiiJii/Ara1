@@ -111,9 +111,7 @@ namespace trading::ui {
         using namespace glm;
         auto origin=vec3(0);
         auto up_offset=vec3(0,200,0);
-        qDebug()<<"updating";
         graph_mutex.lock();
-        qDebug()<<"updating 2";
         auto vertices=graph.get_vertices();
         auto position=origin+up_offset;
         scene->clear();
