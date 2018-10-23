@@ -17,6 +17,10 @@ class BotConfig(models.Model):
     db_verbosity = models.CharField(max_length=100, choices=VERBOSITY_CHOICES)
     currencies = models.ManyToManyField(Currency, related_name='configs')
 
+class Exchange(models.Model):
+    name = models.CharField(max_length=100)
+    status = models.BooleanField(default=False)
+
 
 
 

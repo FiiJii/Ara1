@@ -280,6 +280,85 @@ class BotConfigAddCurrencyTestCase(TradingBaseTestCase):
         response = requests.delete(url,headers=header,json=data)
         self.assertEqual(204, response.status_code)
 
+class ExchangeTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+    def test_register_exchange(self):
+        """
+        Test to verify the create exchange
+        """
+        url = self.get_url_server()+"api/config/exchange/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Binance",
+                "status": True
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        self.assertTrue(('id', 'url', 'name', 'status' in json.loads(response.content)))
+
+
+
+class ExchangeQueryTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+        url = self.get_url_server()+"api/config/exchange/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Binance",
+                "status": True
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+    
+    def test_query_all_exchanges(self):
+
+        url = self.get_url_server()+"api/config/exchange/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        response = requests.get(url,headers=header)
+        self.assertEqual(200, response.status_code)
+        data = response.json()
+        self.assertEqual(data["count"],1)
+
+
+class ExchangeOtherTestCase(TradingBaseTestCase):
+
+    def setUp(self):
+        self.setupUser();
+        self.setupToken();
+
+        url = self.get_url_server()+"api/config/exchange/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Binance",
+                "status": True
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(201, response.status_code)
+        
+
+    def test_register_validation_currency_already_existing(self):
+        
+        url = self.get_url_server()+"api/config/exchange/"
+        header = {'Authorization':'Bearer '+str(self.token)}
+        data ={
+                "name": "Binance",
+                "status": True
+            }
+
+        response = requests.post(url,headers=header,json=data)
+        self.assertEqual(400, response.status_code)
+        self.assertTrue("Exchange already exists" in json.loads(response.content))
+
     
 
         

@@ -75,4 +75,13 @@ class CurrencyView(viewsets.ModelViewSet):
             raise ValidationError('Currency already exists')
         serializer.save()
     
+class ExchangeView(viewsets.ModelViewSet):
+    queryset = Exchange.objects.all()
+    serializer_class = ExchangeSerializer
+    pagination_class = OptionalPagination
 
+    def perform_create(self, serializer):
+        qs = self.queryset.filter(name=self.request.data['name'])
+        if qs.exists():
+            raise ValidationError('Exchange already exists')
+        serializer.save()
