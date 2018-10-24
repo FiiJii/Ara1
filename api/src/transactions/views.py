@@ -64,6 +64,7 @@ class TransactionDetailView(viewsets.ModelViewSet):
                 "name":coin.name,
                 "last":ticker["last"],
                 "bid" :ticker["buy"],
+                "ask" :ticker["sell"], 
                 "volume" :ticker["vol"],
                 "average_tx_last_60second": average_Tx_last_60second,
                 "average_tx_last_hour": average_Tx_last_hour,

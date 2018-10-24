@@ -154,9 +154,10 @@ class CurrencyTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/config/currency/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data ={
-                "name": "Bitcoin",
-                "symbol": "BTC",
-                "description": "Criptomoneda Bitcoin"
+                "name": "Ethereum",
+                "symbol": "eth_usdt",
+                "name_symbol": "ETH/USDT",
+                "description": "Ehtereum a USD"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -174,9 +175,10 @@ class CurrencyQueryTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/config/currency/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data ={
-                "name": "Bitcoin",
-                "symbol": "BTC",
-                "description": "Criptomoneda Bitcoin"
+                "name": "Ethereum",
+                "symbol": "eth_usdt",
+                "name_symbol": "ETH/USDT",
+                "description": "Ehtereum a USD"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -201,9 +203,10 @@ class CurrrencyOtherTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/config/currency/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data ={
-                "name": "Bitcoin",
-                "symbol": "BTC",
-                "description": "Criptomoneda Bitcoin"
+                "name": "Ethereum",
+                "symbol": "eth_usdt",
+                "name_symbol": "ETH/USDT",
+                "description": "Ehtereum a USD"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -215,9 +218,10 @@ class CurrrencyOtherTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/config/currency/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data ={
-                "name": "Bitcoin",
-                "symbol": "BTC",
-                "description": "Criptomoneda Bitcoin"
+                "name": "Ethereum",
+                "symbol": "eth_usdt",
+                "name_symbol": "ETH/USDT",
+                "description": "Ehtereum a USD"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -248,9 +252,10 @@ class BotConfigAddCurrencyTestCase(TradingBaseTestCase):
         url = self.get_url_server()+"api/config/currency/"
         header = {'Authorization':'Bearer '+str(self.token)}
         data2 ={
-                "name": "Bitcoin",
-                "symbol": "BTC",
-                "description": "Criptomoneda Bitcoin"
+                "name": "Ethereum",
+                "symbol": "eth_usdt",
+                "name_symbol": "ETH/USDT",
+                "description": "Ehtereum a USD"
             }
 
         response = requests.post(url,headers=header,json=data2)

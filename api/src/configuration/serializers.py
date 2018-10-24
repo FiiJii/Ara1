@@ -10,7 +10,7 @@ class BotConfigSerializer(serializers.HyperlinkedModelSerializer):
 class CurrencySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Currency
-        fields = ('id', 'url', 'name', 'symbol', 'description')
+        fields = ('id', 'url', 'name', 'symbol', 'name_symbol', 'description')
 
 
 class ExchangeSerializer(serializers.HyperlinkedModelSerializer):

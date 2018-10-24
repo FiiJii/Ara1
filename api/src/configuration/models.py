@@ -8,6 +8,7 @@ VERBOSITY_CHOICES = (
 class Currency(models.Model):
     name = models.CharField(max_length=100)
     symbol = models.CharField(max_length=100)
+    name_symbol = models.CharField(max_length=100)
     description = models.CharField(max_length=150)
 
 class BotConfig(models.Model):
