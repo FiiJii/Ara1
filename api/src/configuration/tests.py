@@ -157,7 +157,8 @@ class CurrencyTestCase(TradingBaseTestCase):
                 "name": "Ethereum",
                 "symbol": "eth_usdt",
                 "name_symbol": "ETH/USDT",
-                "description": "Ehtereum a USD"
+                "description": "Ehtereum a USD",
+                "status": "active"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -178,7 +179,8 @@ class CurrencyQueryTestCase(TradingBaseTestCase):
                 "name": "Ethereum",
                 "symbol": "eth_usdt",
                 "name_symbol": "ETH/USDT",
-                "description": "Ehtereum a USD"
+                "description": "Ehtereum a USD",
+                "status": "active"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -206,7 +208,8 @@ class CurrrencyOtherTestCase(TradingBaseTestCase):
                 "name": "Ethereum",
                 "symbol": "eth_usdt",
                 "name_symbol": "ETH/USDT",
-                "description": "Ehtereum a USD"
+                "description": "Ehtereum a USD",
+                "status": "active"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -221,7 +224,8 @@ class CurrrencyOtherTestCase(TradingBaseTestCase):
                 "name": "Ethereum",
                 "symbol": "eth_usdt",
                 "name_symbol": "ETH/USDT",
-                "description": "Ehtereum a USD"
+                "description": "Ehtereum a USD",
+                "status": "active"
             }
 
         response = requests.post(url,headers=header,json=data)
@@ -255,7 +259,8 @@ class BotConfigAddCurrencyTestCase(TradingBaseTestCase):
                 "name": "Ethereum",
                 "symbol": "eth_usdt",
                 "name_symbol": "ETH/USDT",
-                "description": "Ehtereum a USD"
+                "description": "Ehtereum a USD",
+                "status": "active"
             }
 
         response = requests.post(url,headers=header,json=data2)

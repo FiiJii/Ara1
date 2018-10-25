@@ -1,8 +1,13 @@
 from django.db import models
 
 VERBOSITY_CHOICES = (
-    ("silent","Silent"),
-    ("medium","Medium"),
+    ("silent","silent"),
+    ("medium","medium"),
+)
+
+STATUS_CHOICES = (
+    ("active","active"),
+    ("inactive","inactive"),
 )
 
 class Currency(models.Model):
@@ -10,6 +15,7 @@ class Currency(models.Model):
     symbol = models.CharField(max_length=100)
     name_symbol = models.CharField(max_length=100)
     description = models.CharField(max_length=150)
+    status = models.CharField(max_length=100, choices=STATUS_CHOICES)
 
 class BotConfig(models.Model):
     bot_status = models.BooleanField(default=False)

@@ -47,32 +47,33 @@ class TransactionDetailView(viewsets.ModelViewSet):
     @list_route(methods=['get'])
     def averages(self, request):
         data=[]
-        for coin in Currency.objects.all():
+        response_btc = requests.get("https://www.okex.com/api/v1/ticker.do?symbol=btc_usdt");
+        price_btc = response_btc.json()["ticker"]["last"];
+        for coin in Currency.objects.all():            
             average_Tx_last_60second = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60))).aggregate(total=Avg("amount"))["total"] or 0;
-
-            average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;
-            
+            average_Tx_last_hour = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1))).aggregate(total=Avg("amount"))["total"] or 0;         
             average_tx_last_6hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6))).aggregate(total=Avg("amount"))["total"] or 0;
-
             average_tx_last_12hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12))).aggregate(total=Avg("amount"))["total"] or 0;
-
-            average_tx_last_24hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24))).aggregate(total=Avg("amount"))["total"] or 0;
-            response=requests.get("https://www.okex.com/api/v1/ticker.do?symbol="+coin.symbol);
-            ticker=response.json()["ticker"];
+            average_tx_last_24hours = self.filter_queryset(TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24))).aggregate(total=Avg("amount"))["total"] or 0;            
+            response = requests.get("https://www.okex.com/api/v1/ticker.do?symbol="+coin.symbol);
+            ticker = response.json()["ticker"];            
+            status = BotConfig.objects.filter(currencies__symbol = coin.symbol).exists();
+            usd_volume = (float(price_btc) * float(ticker["vol"]));            
             coin_data = {
                 "symbol":coin.symbol,
                 "name":coin.name,
-                "last":ticker["last"],
-                "bid" :ticker["buy"],
-                "ask" :ticker["sell"], 
-                "volume" :ticker["vol"],
+                "name_parity" : coin.name_symbol,
+                "status_parity" : status,
+                "last": ticker["last"],
+                "bid" : ticker["buy"],
+                "ask" : ticker["sell"], 
+                "volume" : ticker["vol"],
+                "usd_volume" : usd_volume,
                 "average_tx_last_60second": average_Tx_last_60second,
                 "average_tx_last_hour": average_Tx_last_hour,
                 "average_tx_last_6hours": average_tx_last_6hours,
                 "average_tx_last_12hours": average_tx_last_12hours,
                 "average_tx_last_24hours": average_tx_last_24hours,
             }
-            data.append(coin_data);
-        
-        
+            data.append(coin_data);           
         return Response(data=data);   

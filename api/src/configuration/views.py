@@ -24,35 +24,23 @@ class BotConfigView(viewsets.ModelViewSet):
     
     def add_coin(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-
         coin = Currency.objects.get(id=request.data['id'])
-
         current_config.currencies.add(coin)
-
         current_config.save()
-
-        serializer = BotConfigSerializer(current_config, context={'request': request})
-        
+        serializer = BotConfigSerializer(current_config, context={'request': request})        
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
     def delete_coin(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-
         coin = Currency.objects.get(id=request.data['id'])
-
         current_config.currencies.remove(coin)
-
-        serializer = BotConfigSerializer(current_config, context={'request': request})
-        
+        serializer = BotConfigSerializer(current_config, context={'request': request})        
         return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
     
     def list_coin(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-
         coins = current_config.currencies.all()
-
-        serializer = CurrencySerializer(coins, many= True, context={'request': request})
-        
+        serializer = CurrencySerializer(coins, many= True, context={'request': request})        
         return Response(status=status.HTTP_200_OK, data=serializer.data)
 
         
