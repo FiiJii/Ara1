@@ -74,8 +74,7 @@ class CurrencyView(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False)
     def averages(self, request):
         data=[]
-        response_btc = requests.get("https://www.okex.com/api/v1/ticker.do?symbol=btc_usdt");
-        price_btc = response_btc.json()["ticker"]["last"];
+        price_btc = get_price_btc();
         coins = self.filter_queryset(Currency.objects.all())
         for coin in coins:            
             average_Tx_last_60second = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60)).aggregate(total=Avg("amount"))["total"] or 0;
@@ -83,18 +82,16 @@ class CurrencyView(viewsets.ModelViewSet):
             average_tx_last_6hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6)).aggregate(total=Avg("amount"))["total"] or 0;
             average_tx_last_12hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12)).aggregate(total=Avg("amount"))["total"] or 0;
             average_tx_last_24hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24)).aggregate(total=Avg("amount"))["total"] or 0;            
-            response = requests.get("https://www.okex.com/api/v1/ticker.do?symbol="+coin.symbol);
-            ticker = response.json()["ticker"];
+            ticker = get_ticker_coin(coin.symbol)
 
             if BotConfig.objects.filter(currencies__symbol = coin.symbol).exists():
                 status = "active";
             else:
                 status = "inactive";
 
-            usd_volume = (float(price_btc) * float(ticker["vol"]));            
+            usd_volume = (float(price_btc) * float(ticker["vol"]));                   
             coin_data = {
                 "id" : coin.id,
-                #"url" : coin.url,
                 "symbol" : coin.symbol,
                 "name" : coin.name,
                 "name_parity" : coin.name_symbol,
