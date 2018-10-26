@@ -1,12 +1,19 @@
 from configuration.models import *
+from transactions.models import *
 from .services import *
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from configuration.serializers import *
 from api_trading.pagination import OptionalPagination
+from configuration.filters import CurrencyFilter
+from django.db.models import Sum, Avg
+import datetime
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
+import requests
 
 
 class BotConfigView(viewsets.ModelViewSet):
@@ -56,12 +63,56 @@ class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
     pagination_class = OptionalPagination
+    filterset_class = CurrencyFilter
 
     def perform_create(self, serializer):
         qs = self.queryset.filter(symbol=self.request.data['symbol'])
         if qs.exists():
             raise ValidationError('Currency already exists')
         serializer.save()
+
+    @action(methods=['get'], detail=False)
+    def averages(self, request):
+        data=[]
+        response_btc = requests.get("https://www.okex.com/api/v1/ticker.do?symbol=btc_usdt");
+        price_btc = response_btc.json()["ticker"]["last"];
+        coins = self.filter_queryset(Currency.objects.all())
+        for coin in coins:            
+            average_Tx_last_60second = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60)).aggregate(total=Avg("amount"))["total"] or 0;
+            average_Tx_last_hour = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1)).aggregate(total=Avg("amount"))["total"] or 0;         
+            average_tx_last_6hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=6)).aggregate(total=Avg("amount"))["total"] or 0;
+            average_tx_last_12hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=12)).aggregate(total=Avg("amount"))["total"] or 0;
+            average_tx_last_24hours = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=24)).aggregate(total=Avg("amount"))["total"] or 0;            
+            response = requests.get("https://www.okex.com/api/v1/ticker.do?symbol="+coin.symbol);
+            ticker = response.json()["ticker"];
+
+            if BotConfig.objects.filter(currencies__symbol = coin.symbol).exists():
+                status = "active";
+            else:
+                status = "inactive";
+
+            usd_volume = (float(price_btc) * float(ticker["vol"]));            
+            coin_data = {
+                "id" : coin.id,
+                #"url" : coin.url,
+                "symbol" : coin.symbol,
+                "name" : coin.name,
+                "name_parity" : coin.name_symbol,
+                "status_parity" : status,
+                "last": ticker["last"],
+                "bid" : ticker["buy"],
+                "ask" : ticker["sell"], 
+                "volume" : ticker["vol"],
+                "usd_volume" : usd_volume,
+                "average_tx_last_60second": average_Tx_last_60second,
+                "average_tx_last_hour": average_Tx_last_hour,
+                "average_tx_last_6hours": average_tx_last_6hours,
+                "average_tx_last_12hours": average_tx_last_12hours,
+                "average_tx_last_24hours": average_tx_last_24hours,
+            }
+            data.append(coin_data);           
+        return Response(data=data);   
+
     
 class ExchangeView(viewsets.ModelViewSet):
     queryset = Exchange.objects.all()
