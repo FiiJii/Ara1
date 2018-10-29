@@ -13,10 +13,7 @@ class TransactionsTestCase(TradingBaseTestCase):
     def setUp(self):
         self.setupUser();
         self.setupToken();
-        """
-        Test to verify the create a token
-        """    
-        #print(self.token)
+
 
     def test_register_transaction(self):
         """
@@ -83,21 +80,16 @@ class TransactionDetailsTestCase(TradingBaseTestCase):
         self.transaction_url=response.json()["url"]
     
     def test_register_detail_transaction(self):
-        """
-        Get 'access' token 
-        """
-        self.setupToken()
-        self.token = self.auth['access']
-
 
         url = self.get_url_server()+"api/trading/transaction_details/"
         header = {'Authorization':'Bearer '+str(self.token)}
         print(header)
         data = {
             "transaction": self.transaction_url,
-            "parity": "btc_usd",
-            "amount": "55000.0000000000",
-            "commission": "0.0200000000",
+            "parity": "ltc_usdt",
+            "action": "buy",
+            "amount": "656565.0000000000",
+            "commission": "121.0000000000",
             "okex_order": 1,
             "transaction_order": 1
             }
@@ -124,19 +116,21 @@ class TransactionDetailsQueryTestCase(TradingBaseTestCase):
         header = {'Authorization':'Bearer '+str(self.token)}
         data1 = {
             "transaction": self.transaction_url,
-            "parity": "btc_usd",
-            "amount": "55000.0000000000",
-            "commission": "0.0200000000",
-            "okex_order": 1060,
+            "parity": "ltc_usdt",
+            "action": "buy",
+            "amount": "656565.0000000000",
+            "commission": "121.0000000000",
+            "okex_order": 1,
             "transaction_order": 1
             }
         data2 = {
             "transaction": self.transaction_url,
-            "parity": "usd_ltc",
-            "amount": "60000.0000000000",
-            "commission": "0.3200000000",
-            "okex_order": 1061,
-            "transaction_order": 2
+            "parity": "ltc_btc",
+            "action": "buy",
+            "amount": "174.8386137494",
+            "commission": "0.0000000000",
+            "okex_order": 2,
+            "transaction_order": 2,
             }
         
         response = requests.post(url,headers=header,json=data1)
