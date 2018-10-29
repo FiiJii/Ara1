@@ -170,6 +170,7 @@ namespace trading::rest {
         if(!(response_json.count("results")>0)||response_json["counts"]>0)
             return {nullptr,Error{1,"data is not array"} };
         auto config_node=response_json["results"][0];
+        std::cout<<config_node<<std::endl;
         Bot_Config bot_config;
         bot_config.id =config_node["id"];
         bot_config.url=config_node["url"];
@@ -177,7 +178,7 @@ namespace trading::rest {
         bot_config.bot_status=config_node["bot_status"];
         bot_config.time_interval= config_node["time_interval"];
         for(auto coin_node:config_node["currencies"]) {
-            bot_config.coins.push_back(coin_value(coin_node["symbol"]));
+            bot_config.coins.push_back(coin_node["symbol"]);
         }
 
 

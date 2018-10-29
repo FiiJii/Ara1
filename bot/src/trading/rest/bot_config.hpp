@@ -16,7 +16,7 @@ public:
     bool bot_status;
     long time_interval;
     double max_lost;
-    std::vector<trading::Coins> coins;
+    std::vector<std::string> coins;
 };
 
 

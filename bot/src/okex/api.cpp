@@ -49,6 +49,7 @@ namespace okex{
                         std::cout<<stringbuff.str()<<std::endl;
                         stringbuff.str("");
                         stringbuff.clear();
+                        exit(129);
 
                     }
 

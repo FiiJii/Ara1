@@ -71,35 +71,42 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
 std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Graph& graph,
                                                         trading::Graph::NodeType node,
                                                         std::map<trading::Coins,int>& visited,
-                                                        double capital,int depth=0){
+                                                        double capital,double new_fees , int depth=0){
         visited[node.value]++;
-        if(visited[node.value]==2&&node.value==trading::Coins::usd){
+
+        if(visited[node.value]>=2&&node.value==trading::Coins::usd){
                     trading::path_node path_node;
                     path_node.coin=node.value;
-                    std::cout<<"Capital:"<<capital<<"\n";
+                    //std::cout<<"Capital:"<<capital<<"\n";
+                   // for(int spacei=0;spacei<depth;spacei++)
+                      //  std::cout<<"---";
+                 //   std::cout<<node.value<<" final:"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
+                    visited[node.value]--;
                     return {{path_node},capital};
         }else if (visited[node.value]>1){
+            visited[node.value]--;
             return {{},0.0f};
         }else{
+            //for(int spacei=0;spacei<depth;spacei++)
+               // std::cout<<"---";
+            //std::cout<<node.value<<":"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
             std::vector<trading::path_node> max_path;
             float max_gain=0;
             trading::path_node max_path_node;
             for(auto& neighbor:node.neighbors) {
-                auto fees_rate=0.02f/100.0f;
+                auto fees_rate=0.15f/100.0f;
                 auto price=graph.get_edge(node.value,neighbor.get().value).price;
                 auto new_capital=price==0?0:capital/price;
                 auto fees=new_capital*fees_rate;
-                new_capital=new_capital-fees;
+                    new_capital=new_capital-fees;
 
                 trading::path_node path_node_temp;
                 path_node_temp.amount=new_capital;
                 path_node_temp.price=price;
                 path_node_temp.coin=node.value;
                 path_node_temp.fees=fees;
-                for(int spacei=0;spacei<depth;spacei++)
-                    std::cout<<"---";
-                std::cout<<neighbor.get().value<<":"<<new_capital<<std::endl;
-                auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital,depth+1);
+
+                auto [temp_path,gain]=get_max_gain_path(graph,neighbor,visited,new_capital,fees,depth+1);
                 if(gain>max_gain) {
                     max_path = temp_path;
                     max_path_node=path_node_temp;
@@ -111,6 +118,7 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
             final_path.reserve(max_path.size()+1);
             final_path.push_back(max_path_node);
             final_path.insert(final_path.end(),max_path.begin(),max_path.end());
+            visited[node.value]--;
             return {final_path,max_gain};
         }
 
@@ -135,15 +143,23 @@ int main(int argc,char* argv[]) {
         auto bot_config=result.get_value().value();
         for(auto coin_a:bot_config.coins) {
 
-            for (auto coin_b:bot_config.coins){
-                std::cout<<"adding coin "<<coin_a<<":"<<coin_b<<std::endl;
-                if(coin_a!=coin_b)
-                    api.register_for_ticker(coin_a, coin_b);
-            }
+            //for (auto coin_b:bot_config.coins){
+                std::cout<<"adding coin "<<coin_a<<std::endl;
+                auto symbol=trading::symbol_value(coin_a);
+                api.register_for_ticker(symbol.from,symbol.to);
+
         }
         auto end_time = std::chrono::high_resolution_clock::now();
         std::cout<<"Building Graph\n";
-        trading::Graph graph{bot_config.coins};
+        std::vector<trading::Coins> coins;
+        for(auto coin:bot_config.coins) {
+            auto symbol=trading::symbol_value(coin);
+            if(std::find(coins.begin(),coins.end(),symbol.from)==coins.end())
+                coins.push_back(symbol.from);
+            if(std::find(coins.begin(),coins.end(),symbol.to)==coins.end())
+                coins.push_back(symbol.to);
+        }
+        trading::Graph graph{coins};
 
         std::mutex graph_mutex;
 
@@ -160,8 +176,8 @@ int main(int argc,char* argv[]) {
                                        graph_mutex.lock();
                                        trading::Edge_Data edge;
                                        trading::Edge_Data inverse_edge;
-                                       edge.price=t.sell;
-                                       inverse_edge.price=1.0/t.buy;
+                                       edge.price=t.last;
+                                       inverse_edge.price=1.0/t.last ;
                                        graph.update_edge(t.from, t.to, edge);
                                        graph.update_edge(t.to, t.from, inverse_edge);
                                        graph_mutex.unlock();
@@ -176,15 +192,15 @@ int main(int argc,char* argv[]) {
                                                   std::locale::global(std::locale::classic());
                                                   while(running) {
                                                       graph_mutex.lock();
-                                                      double initial_invest = 100000;
+                                                      double initial_invest = 10000;
                                                       auto [success,root]=graph.get_node(Coins::usd);
                                                       std::map<trading::Coins,int> visited;
                                                       for(auto v:graph.get_vertices())
                                                           visited[v]=0;
                                                       if(!success) continue;
-                                                      std::cout<<"Start Search\n";
-                                                      auto [max_path,gain]=get_max_gain_path(graph,root,visited,initial_invest);
-                                                      std::cout<<"End Search"<<std::endl;
+                                                      //std::cout<<"Start Search\n";
+                                                      auto [max_path,gain]=get_max_gain_path(graph,root,visited,initial_invest,0);
+                                                      //std::cout<<"End Search"<<std::endl;
                                                       if (max_path.size() > 0&&gain>initial_invest) {
                                                           register_db(max_path,initial_invest,gain-initial_invest);
                                                       }
@@ -212,6 +228,7 @@ int main(int argc,char* argv[]) {
 
     }catch (std::exception& e) {
         std::cout << e.what() << std::endl;
+        exit(10);
     }
     return 0;
 }
