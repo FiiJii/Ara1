@@ -17,8 +17,7 @@ def get_ticker_coin(coin):
 
 
 def get_active_coins_symbols(config):
-    current_config = BotConfig.objects.get(pk=pk)
-    pairs = current_config.currencies.all()
+    pairs = config.currencies.all()
     coins=set();
     for pair in pairs:
         for coin in pair.symbol.split("_"):
