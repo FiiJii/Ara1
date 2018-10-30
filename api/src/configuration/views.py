@@ -89,9 +89,9 @@ class BotConfigView(viewsets.ModelViewSet):
 
     @action(methods=['get', 'post', 'delete'], detail=True)
     def coins(self, request, pk=None):
-        methods={"POST":lambda: self.add_coin(request,pk),
-                 "DELETE":lambda: self.delete_coin(request,pk),
-                 "GET":lambda: self.list_coin(request,pk)}
+        methods={"POST":lambda: self.add_coins(request,pk),
+                 "DELETE":lambda: self.delete_coins(request,pk),
+                 "GET":lambda: self.list_coins(request,pk)}
         return methods[request.method]()
 
 class CoinView(viewsets.ModelViewSet):
