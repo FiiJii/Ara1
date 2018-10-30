@@ -17,6 +17,10 @@ class Currency(models.Model):
     description = models.CharField(max_length=150)
     status = models.CharField(max_length=100, choices=STATUS_CHOICES)
 
+class Coin(models.Model):
+    symbol = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+
 class BotConfig(models.Model):
     bot_status = models.BooleanField(default=False)
     time_interval = models.IntegerField(default=0)

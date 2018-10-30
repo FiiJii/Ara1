@@ -12,6 +12,10 @@ class CurrencySerializer(serializers.HyperlinkedModelSerializer):
         model = Currency
         fields = ('id', 'url', 'name', 'symbol', 'name_symbol', 'description', 'status')
 
+class CoinSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model =Coin 
+        fields = ('id', 'url', 'name', 'symbol')
 
 class ExchangeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
