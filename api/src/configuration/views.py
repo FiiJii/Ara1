@@ -94,6 +94,12 @@ class BotConfigView(viewsets.ModelViewSet):
                  "GET":lambda: self.list_coin(request,pk)}
         return methods[request.method]()
 
+class CoinView(viewsets.ModelViewSet):
+    queryset = Coin.objects.all()
+    serializer_class = CoinSerializer
+    pagination_class = OptionalPagination
+
+
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer

@@ -6,6 +6,7 @@ router = routers.DefaultRouter()
 router.register(r'bot', views.BotConfigView)
 router.register(r'currency', views.CurrencyView)
 router.register(r'exchange', views.ExchangeView)
+router.register(r'coin', views.CoinView)
 
 
 urlpatterns = [
