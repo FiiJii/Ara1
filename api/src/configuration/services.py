@@ -1,4 +1,4 @@
-from configuration.models import BotConfig
+from configuration.models import *
 import requests
 
 def get_config_bot_queryset():
