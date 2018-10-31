@@ -1,5 +1,5 @@
 from configuration.models import *
-from django_filters import rest_framework as filters
+from rest_framework.filters import BaseFilterBackend
 from django_filters import CharFilter
 from functools import reduce
 import operator
@@ -7,23 +7,15 @@ from django.db.models import Q
 
 
 
-class CurrencyFilter(filters.FilterSet):
-    coins = CharFilter(method ='my_custom_filter')
+class CoinsFilterBackend(BaseFilterBackend):
 
-    class Meta:
-        model = Currency
-        fields = ['coins']
-
-    def my_custom_filter(self, queryset, name, value):
-
+    def filter_queryset(self, request,queryset,view):
+        if "coins" not in request.query_params:
+            return
+        value=request.query_params["coins"]
         q_list= []
-
         for v in value.split(','):
           
             q_list.append(Q(symbol__endswith = v))
-
-            #q_list = [Q(parity__endswith = v), Q(parity__endswith = v)]
-            
         qs = queryset.filter(reduce(operator.or_, q_list))
-                        
         return qs

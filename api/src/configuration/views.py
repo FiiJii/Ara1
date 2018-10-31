@@ -8,7 +8,7 @@ from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 from configuration.serializers import *
 from api_trading.pagination import OptionalPagination
-from configuration.filters import CurrencyFilter
+from configuration.filters import CoinsFilterBackend
 from django.db.models import Sum, Avg
 import datetime
 from datetime import date, timedelta
@@ -102,11 +102,10 @@ class CoinView(viewsets.ModelViewSet):
 
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
-    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter,CoinsFilterBackend)
     serializer_class = CurrencySerializer
-    search_fields = ('symbol',)
+    filter_fields = ('symbol',)
     pagination_class = OptionalPagination
-    filterset_class = CurrencyFilter
 
     def perform_create(self, serializer):
         qs = self.queryset.filter(symbol=self.request.data['symbol'])
