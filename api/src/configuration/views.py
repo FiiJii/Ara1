@@ -102,7 +102,9 @@ class CoinView(viewsets.ModelViewSet):
 
 class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all()
+    filter_backends = (DjangoFilterBackend,filters.OrderingFilter)
     serializer_class = CurrencySerializer
+    search_fields = ('symbol',)
     pagination_class = OptionalPagination
     filterset_class = CurrencyFilter
 
