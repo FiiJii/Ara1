@@ -41,8 +41,7 @@ class ExpandableModelSerializer(serializers.HyperlinkedModelSerializer):
         Create nested fields for forward and reverse relationships.
         """
         meta = getattr(self, 'Meta', None)
-        base_class=meta.nested_classes[field_name] if field_name in meta.nested_classes else ModelSerializer
-        print (base_class)
+        base_class=meta.nested_classes[field_name] if field_name in meta.nested_classes else serializers.HyperlinkedModelSerializer
         class NestedSerializer(base_class):
             class Meta:
                 model = relation_info.related_model
