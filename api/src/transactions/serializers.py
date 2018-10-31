@@ -1,5 +1,8 @@
 from rest_framework import serializers
 from transactions.models import Transaction, TransactionDetail
+from configuration.serializers import CurrencySerializer
+from api_trading.serializers import *
+
 
 class TransactionNestedDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -12,7 +15,9 @@ class TransactionSerializer(serializers.HyperlinkedModelSerializer):
         model = Transaction
         fields =('id','url','creation_date','investment', 'earnings', 'details')
 
-class TransactionDetailSerializer(serializers.HyperlinkedModelSerializer):
+class TransactionDetailSerializer(ExpandableModelSerializer):
     class Meta:
         model = TransactionDetail
-        fields =('id','url', 'transaction', 'parity', 'action','amount', 'commission','okex_order','transaction_order','creation_date')
+        depth=1
+        nested_classes={"parity":CurrencySerializer}
+        fields =('id', 'url', 'transaction', 'creation_date', 'parity', 'transaction_order', 'okex_order', 'action', 'amount', 'commission')
