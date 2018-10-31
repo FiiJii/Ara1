@@ -1,4 +1,5 @@
 from django.db import models
+from configuration.models import Currency
 
 # Create your models here.
 class Transaction(models.Model):
@@ -13,7 +14,7 @@ class TransactionDetail(models.Model):
         ("sell", "sell")
     )
     transaction = models.ForeignKey(Transaction, null=True, blank=True, on_delete=models.CASCADE, related_name='details')
-    parity = models.CharField(max_length=100)
+    parity = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='currency')
     amount = models.DecimalField(max_digits=19, decimal_places=10)
     commission = models.DecimalField(max_digits=19, decimal_places=10)
     action = models.CharField(max_length=6,choices=ACTION_CHOICES)
