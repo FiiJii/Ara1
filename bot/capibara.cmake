@@ -16,6 +16,6 @@ src/trading/rest/result.cpp
 src/trading/rest/transaction.cpp 
 src/trading/rest/transaction_detail.cpp 
 src/trading/ticker.cpp 
-src/utils/utils.cpp 
-)
+src/utils/utils.cpp
+        src/trading/rest/parity.cpp src/trading/rest/parity.hpp)
 target_include_directories(okex_linux PUBLIC "src/okex/" "src/main/" "src/trading/" "src/utils/" "include/" "/usr/include/" )

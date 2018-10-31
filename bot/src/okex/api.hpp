@@ -17,6 +17,7 @@ namespace okex{
            //@param [in] from the coin used to pay
            //@param [in] to the buyed coin
            void register_for_ticker(trading::Coins from,trading::Coins to);
+           void ping();
            void listen(std::function<void(trading::Ticker)> callback);
            trading::Symbol  get_supported_symbol_for(trading::Symbol symbol);
         private:

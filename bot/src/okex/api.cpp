@@ -14,6 +14,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <chrono>
 #include "nlohmann/json.hpp"
 #include "symbols.hpp"
 
@@ -23,11 +24,23 @@ namespace okex{
         std::string channel="{'event':'addChannel','channel':'ok_sub_spot_"+coin_name(to)+"_"+coin_name(from)+"_ticker'}";
         auto sent_bytes=socket->sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
     }
+    void Api::ping(){
+        std::string channel="{'event':'ping'}";
+        auto sent_bytes=socket->sendFrame(channel.c_str(),channel.length(),Poco::Net::WebSocket::FRAME_TEXT);
+    }
     void Api::listen(std::function<void(trading::Ticker)> callback){
             char buffer[1000];
             std::stringstream stringbuff;
+            auto last_time=std::chrono::system_clock::now();
+
             while(true){
                     int flags=0;
+                    auto current_time=std::chrono::system_clock::now();
+                    auto seconds=std::chrono::duration_cast<std::chrono::seconds>(current_time-last_time);
+                    if(seconds.count()>20) {
+                        last_time=current_time;
+                        ping();
+                    }
                     int received_bytes=socket->receiveFrame((void*)buffer,1000,flags);
                     for(int i=0;i<received_bytes;i++){
                         stringbuff<<buffer[i];
@@ -49,7 +62,6 @@ namespace okex{
                         std::cout<<stringbuff.str()<<std::endl;
                         stringbuff.str("");
                         stringbuff.clear();
-                        exit(129);
 
                     }
 

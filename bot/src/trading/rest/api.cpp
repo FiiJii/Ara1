@@ -89,8 +89,13 @@ namespace trading::rest {
         sprintf(amount_buffer,"%.10F",detail.amount);
         sprintf(fee_buffer,"%.10F",detail.fee);
 
+        auto parity_result=get_parity(coin_name(detail.to)+"_"+coin_name(detail.from));
+        if(parity_result.failed()){
+            throw std::runtime_error("can't get the parity data");
+        }
+        auto _parity=parity_result.get_value().value();
         nlohmann::json json={ {"transaction",transaction.url},
-                              {"parity",coin_name(detail.to)+"_"+coin_name(detail.from)},
+                              {"parity",_parity.url},
                               {"amount", amount_buffer},
                               {"action", action_name(detail.action)},
                               {"commission", fee_buffer},
@@ -183,6 +188,34 @@ namespace trading::rest {
 
 
         return result{bot_config};
+    }
+
+    result<parity> api::get_parity(std::string symbol) {
+        using namespace Poco::Net;
+        std::string endpoint=api_root+"/config/bot/currency/?symbol="+symbol;
+        HTTPRequest request(HTTPRequest::HTTP_GET, endpoint, HTTPMessage::HTTP_1_1);
+        request.setContentType("application/json");
+        request.setContentLength(0);
+        set_auth_headers(request);
+        session->sendRequest(request);
+        HTTPResponse response;
+        std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
+        if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_OK) {
+            auto error = Error{response.getStatus(), response_body};
+            return result<parity>{nullptr,error};
+        }
+        auto response_json=nlohmann::json::parse(response_body);
+        if(!(response_json.count("results")>0)||response_json["counts"]>0)
+            return {nullptr,Error{1,"data is not array"} };
+        auto parity_node=response_json["results"][0];
+        std::cout<<parity_node<<std::endl;
+        parity _parity;
+        _parity.id =parity_node["id"];
+        _parity.url=parity_node["url"];
+        _parity.name=parity_node["name"];
+        _parity.symbol=parity_node["symbol"];
+
+        return {_parity};
     }
 
 }

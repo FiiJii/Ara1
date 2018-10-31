@@ -13,6 +13,7 @@
 #include "Poco/Net/HTTPSClientSession.h"
 #include "transaction.hpp"
 #include "bot_config.hpp"
+#include "parity.hpp"
 
 namespace trading::rest {
     class api {
@@ -22,6 +23,7 @@ namespace trading::rest {
         std::optional<Error> login(std::string user, std::string password);
         std::optional<Error> refresh();
         bool is_session_valid();
+        result<parity> get_parity(std::string symbol);
         result<Transaction> register_transaction(Transaction& transaction);
         result<Transaction_Detail> register_detail(const Transaction& transaction,Transaction_Detail& detail);
         result<Bot_Config> get_bot_config();
