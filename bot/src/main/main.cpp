@@ -99,7 +99,7 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
                 auto new_capital=price==0?0:capital/price;
                 auto fees=new_capital*fees_rate;
                     new_capital=new_capital-fees;
-
+                fees=0;
                 trading::path_node path_node_temp;
                 path_node_temp.amount=new_capital;
                 path_node_temp.price=price;

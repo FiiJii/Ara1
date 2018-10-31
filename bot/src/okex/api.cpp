@@ -37,13 +37,14 @@ namespace okex{
                     int flags=0;
                     auto current_time=std::chrono::system_clock::now();
                     auto seconds=std::chrono::duration_cast<std::chrono::seconds>(current_time-last_time);
-                    if(seconds.count()>20) {
+                    if(seconds.count()>30) {
                         last_time=current_time;
-                        ping();
+                        //ping();
                     }
                     int received_bytes=socket->receiveFrame((void*)buffer,1000,flags);
                     for(int i=0;i<received_bytes;i++){
                         stringbuff<<buffer[i];
+                        std::cout<<buffer[i];
                     }
                     try{
                         nlohmann::json root_node;
