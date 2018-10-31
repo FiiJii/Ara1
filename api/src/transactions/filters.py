@@ -35,10 +35,7 @@ class CurrencyFilter(filters.FilterSet):
         q_list= []
 
         for v in value.split(','):
-          
-            q_list.append(Q(parity__endswith = v))
-
-            #q_list = [Q(parity__endswith = v), Q(parity__endswith = v)]
+            q_list.append(Q(parity__symbol__endswith = v))
             
         qs = queryset.filter(reduce(operator.or_, q_list))
                         
