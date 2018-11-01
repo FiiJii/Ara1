@@ -17,6 +17,8 @@
 #include <chrono>
 #include "nlohmann/json.hpp"
 #include "symbols.hpp"
+#include "Poco/Zip/Decompress.h"
+#include "Poco/InflatingStream.h"
 
 using namespace Poco;
 namespace okex{
@@ -30,7 +32,8 @@ namespace okex{
     }
     void Api::listen(std::function<void(trading::Ticker)> callback){
             char buffer[1000];
-            std::stringstream stringbuff;
+            std::stringstream deflated_stream;
+
             auto last_time=std::chrono::system_clock::now();
 
             while(true){
@@ -42,27 +45,35 @@ namespace okex{
                         //ping();
                     }
                     int received_bytes=socket->receiveFrame((void*)buffer,1000,flags);
-                    for(int i=0;i<received_bytes;i++){
-                        stringbuff<<buffer[i];
-                        std::cout<<buffer[i];
-                    }
+                    Poco::InflatingOutputStream inflating_stream(deflated_stream,15);
+                    static char dummy_head[2] = {
+                            0x8 + 0x7 * 0x10,
+                            (((0x8 + 0x7 * 0x10) * 0x100 + 30) / 31 * 31) & 0xFF,
+                    };
+                inflating_stream.write(dummy_head,2);
+                inflating_stream.write(buffer,received_bytes);
+                    //for(int i=0;i<received_bytes;i++){
+                    //    inflating_stream<<buffer[i];
+                    //}
+                    inflating_stream.close();
                     try{
                         nlohmann::json root_node;
-                        stringbuff>>root_node;
-                        std::cout<<stringbuff.str()<<std::endl;
+
+                        deflated_stream>>root_node;
+
+
                         for(auto node:root_node){
                             auto ticker_node=node;
                             trading::Ticker ticker=ticker_node;
                             std::cout<<ticker.from<<ticker.to<< ticker.last<<"\n";
                             callback(ticker);
                         }
-                        stringbuff.str("");
-                        stringbuff.clear();
+                        deflated_stream.str("");
+                        deflated_stream.clear();
                     }catch(std::exception& e){
                         std::cerr<<e.what()<<std::endl;
-                        std::cout<<stringbuff.str()<<std::endl;
-                        stringbuff.str("");
-                        stringbuff.clear();
+                        deflated_stream.str("");
+                        deflated_stream.clear();
 
                     }
 

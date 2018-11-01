@@ -11,11 +11,10 @@ class CoinsFilterBackend(BaseFilterBackend):
 
     def filter_queryset(self, request,queryset,view):
         if "coins" not in request.query_params:
-            return
+            return queryset
         value=request.query_params["coins"]
         q_list= []
         for v in value.split(','):
-          
             q_list.append(Q(symbol__endswith = v))
-        qs = queryset.filter(reduce(operator.or_, q_list))
+        queryset.filter(reduce(operator.or_, q_list))
         return qs
