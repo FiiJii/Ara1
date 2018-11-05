@@ -53,7 +53,7 @@ class BotConfigView(viewsets.ModelViewSet):
     def add_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
         qs=Currency.objects.filter(status='active')
-        qs=qs.filter(symbol__contains=request.data['symbol']
+        qs=qs.filter(symbol__contains=request.data['symbol'])
         for currency in qs:
             current_config.currencies.add(currency)
         current_config.save()
@@ -113,7 +113,7 @@ class CurrencyView(viewsets.ModelViewSet):
     def averages(self, request):
         data=[]
         price_btc = get_price_btc();
-        coins = self.filter_queryset(Currency.objects.all())
+        coins = self.paginate_queryset(Currency.objects.filter(status='active'))
         for coin in coins:            
             average_Tx_last_60second = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(seconds=60)).aggregate(total=Avg("amount"))["total"] or 0;
             average_Tx_last_hour = TransactionDetail.objects.filter(transaction__creation_date__gte = datetime.datetime.now()-timedelta(hours=1)).aggregate(total=Avg("amount"))["total"] or 0;         
@@ -146,7 +146,7 @@ class CurrencyView(viewsets.ModelViewSet):
                 "average_tx_last_24hours": average_tx_last_24hours,
             }
             data.append(coin_data);           
-        return Response(data=data);   
+        return self.get_paginated_response(data)
 
     
 class ExchangeView(viewsets.ModelViewSet):
