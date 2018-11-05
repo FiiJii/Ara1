@@ -43,12 +43,16 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
     transaction.investment=initial_invest;
     transaction.details.reserve(path.size());
     okex::Api api_okex;
+
     std::cout<<"Path:Earnings("<<earnings<<") ";
     for(auto idx=0;idx<path.size()-1;idx++){
 
         auto& current_node=path[idx];
         auto& next_node=path[idx+1];
+        std::cout<<current_node.coin<<"_"<<next_node.coin<<std::endl;
+
         auto symbol=api_okex.get_supported_symbol_for(trading::Symbol{current_node.coin,next_node.coin});
+        std::cout<<trading::symbol_name(symbol)<<std::endl;
         Transaction_Detail detail={};
         detail.id=0;
         detail.url="";
@@ -57,7 +61,7 @@ void register_db(std::vector<trading::path_node> path,double initial_invest,doub
         detail.fee=current_node.fees;
         detail.price=current_node.price;
         detail.amount=current_node.amount;
-        detail.action=current_node.coin==symbol.from?trading::rest::Action::Buy:trading::rest::Action::Buy;
+        detail.action=current_node.coin==symbol.from?trading::rest::Action::Buy:trading::rest::Action::Sell;
         transaction.details.push_back(detail);
         std::cout<<trading::coin_name(current_node.coin)<<"->"<<trading::coin_name(next_node.coin)<<",";
     }
@@ -77,19 +81,19 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
         if(visited[node.value]>=2&&node.value==trading::Coins::usd){
                     trading::path_node path_node;
                     path_node.coin=node.value;
-                    //std::cout<<"Capital:"<<capital<<"\n";
-                   // for(int spacei=0;spacei<depth;spacei++)
-                      //  std::cout<<"---";
-                 //   std::cout<<node.value<<" final:"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
+                    std::cout<<"Capital:"<<capital<<"\n";
+                    for(int spacei=0;spacei<depth;spacei++)
+                       std::cout<<"---";
+                    std::cout<<node.value<<" final:"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
                     visited[node.value]--;
                     return {{path_node},capital};
         }else if (visited[node.value]>1){
             visited[node.value]--;
             return {{},0.0f};
         }else{
-            //for(int spacei=0;spacei<depth;spacei++)
-               // std::cout<<"---";
-            //std::cout<<node.value<<":"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
+            for(int spacei=0;spacei<depth;spacei++)
+                std::cout<<"---";
+            std::cout<<node.value<<":"<<capital<<"(fee:"<<new_fees<<")"<<std::endl;
             std::vector<trading::path_node> max_path;
             float max_gain=0;
             trading::path_node max_path_node;
@@ -97,9 +101,11 @@ std::pair<std::vector<trading::path_node>,double> get_max_gain_path(trading::Gra
                 auto fees_rate=0.15f/100.0f;
                 auto price=graph.get_edge(node.value,neighbor.get().value).price;
                 auto new_capital=price==0?0:capital/price;
+
                 auto fees=new_capital*fees_rate;
-                    new_capital=new_capital-fees;
                 fees=0;
+                new_capital=new_capital-fees;
+
                 trading::path_node path_node_temp;
                 path_node_temp.amount=new_capital;
                 path_node_temp.price=price;
@@ -159,6 +165,9 @@ int main(int argc,char* argv[]) {
             if(std::find(coins.begin(),coins.end(),symbol.to)==coins.end())
                 coins.push_back(symbol.to);
         }
+        std::cout<<"monedas \n";
+        for(auto& caux:coins) std::cout<<caux<<" , ";
+        std::cout<<"end monedas \n";
         trading::Graph graph{coins};
 
         std::mutex graph_mutex;

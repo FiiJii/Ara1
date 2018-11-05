@@ -42,7 +42,7 @@ namespace okex{
                     auto seconds=std::chrono::duration_cast<std::chrono::seconds>(current_time-last_time);
                     if(seconds.count()>30) {
                         last_time=current_time;
-                        //ping();
+                        ping();
                     }
                     int received_bytes=socket->receiveFrame((void*)buffer,1000,flags);
                     Poco::InflatingOutputStream inflating_stream(deflated_stream,15);
@@ -65,7 +65,7 @@ namespace okex{
                         for(auto node:root_node){
                             auto ticker_node=node;
                             trading::Ticker ticker=ticker_node;
-                            std::cout<<ticker.from<<ticker.to<< ticker.last<<"\n";
+                            std::cout<<ticker.from<<"_"<<ticker.to<<"("<< ticker.last<<")\n";
                             callback(ticker);
                         }
                         deflated_stream.str("");
@@ -100,9 +100,10 @@ namespace okex{
 
         if(this->symbols.count(trading::symbol_name(symbol))>0)
             return symbol;
-        trading::Symbol inverted_symbol={symbol.to,symbol.to};
+        trading::Symbol inverted_symbol={symbol.to,symbol.from};
         if(this->symbols.count(trading::symbol_name(inverted_symbol))>0)
             return inverted_symbol;
+        //return symbol;
     }
 }
 

@@ -192,7 +192,7 @@ namespace trading::rest {
 
     result<parity> api::get_parity(std::string symbol) {
         using namespace Poco::Net;
-        std::string endpoint=api_root+"/config/bot/currency/?symbol="+symbol;
+        std::string endpoint=api_root+"/config/currency/?symbol="+symbol;
         HTTPRequest request(HTTPRequest::HTTP_GET, endpoint, HTTPMessage::HTTP_1_1);
         request.setContentType("application/json");
         request.setContentLength(0);
@@ -200,11 +200,15 @@ namespace trading::rest {
         session->sendRequest(request);
         HTTPResponse response;
         std::string response_body{std::istreambuf_iterator<char>(session->receiveResponse(response)),{}};
+        auto response_json=nlohmann::json::parse(response_body);
+        std::cout<<endpoint<<std::endl;
+        std::cout<<response.getStatus()<<response_body<<std::endl;
         if(response.getStatus()!=HTTPResponse::HTTPStatus::HTTP_OK) {
             auto error = Error{response.getStatus(), response_body};
             return result<parity>{nullptr,error};
         }
-        auto response_json=nlohmann::json::parse(response_body);
+
+
         if(!(response_json.count("results")>0)||response_json["counts"]>0)
             return {nullptr,Error{1,"data is not array"} };
         auto parity_node=response_json["results"][0];

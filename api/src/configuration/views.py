@@ -52,12 +52,8 @@ class BotConfigView(viewsets.ModelViewSet):
 
     def add_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-        coins = get_active_coins_symbols(current_config)        
-        coin = Coin.objects.get(symbol=request.data['symbol'])
-        coins.add(coin.symbol);
         qs=Currency.objects.filter(status='active')
-        for c in coins:
-            qs=qs.filter(symbol__contains=c)
+        qs=qs.filter(symbol__contains=request.data['symbol']
         for currency in qs:
             current_config.currencies.add(currency)
         current_config.save()
@@ -66,12 +62,7 @@ class BotConfigView(viewsets.ModelViewSet):
     
     def delete_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-        coins = get_active_coins_symbols(current_config)        
-        coin = Coin.objects.get(symbol=request.data['symbol'])
-        coins.add(coin.symbol);
-        qs=Currency.objects.filter(status='active')
-        for c in coins:
-            qs=qs.filter(symbol__contains=c)
+        qs=qs.filter(symbol__contains=request.data['symbol'])
         for currency in qs:
             current_config.currencies.remove(currency)
         serializer = BotConfigSerializer(current_config, context={'request': request})        
