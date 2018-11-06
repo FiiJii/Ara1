@@ -78,7 +78,7 @@ class BotConfigView(viewsets.ModelViewSet):
         tdata=[]
         for c in ['eth','btc','usdt']:
             total_count=Currency.objects.filter(status='active',symbol__endswith=c).count()
-            bot_count=curren_config.currencies.filter(status='active',symbol__endswith=c).count()
+            bot_count=current_config.currencies.filter(status='active',symbol__endswith=c).count()
             tdata.append({c:(total_count==bot_count),})
         return Response(status=status.HTTP_200_OK, data=tdata)
 
