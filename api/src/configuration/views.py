@@ -75,11 +75,11 @@ class BotConfigView(viewsets.ModelViewSet):
     
     def list_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-	data=[]
+        data=[]
         for c in ['eth','btc','usdt']
-	    total_count=Currency.objects.filter(status='active',symbol__endswith=c).count()
-	    bot_count=curren_config.currencies.filter(status='active',symbol__endswith=c).count(
-	    data.append({c:(total_count==bot_count)})
+            total_count=Currency.objects.filter(status='active',symbol__endswith=c).count()
+            bot_count=curren_config.currencies.filter(status='active',symbol__endswith=c).count(
+            data.append({c:(total_count==bot_count)})
         return Response(status=status.HTTP_200_OK, data=data)
 
     @action(methods=['get', 'post', 'delete'], detail=True)
