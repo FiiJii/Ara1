@@ -62,6 +62,7 @@ class BotConfigView(viewsets.ModelViewSet):
     
     def delete_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
+        qs=Currency.objects.filter(status='active')
         qs=qs.filter(symbol__contains=request.data['symbol'])
         for currency in qs:
             current_config.currencies.remove(currency)
@@ -100,7 +101,7 @@ class CurrencyView(viewsets.ModelViewSet):
     queryset = Currency.objects.all().order_by('id')
     filter_backends = (DjangoFilterBackend,filters.OrderingFilter,CoinsFilterBackend)
     serializer_class = CurrencySerializer
-    filter_fields = ('symbol',)
+    filter_fields = ('symbol', 'status')
     pagination_class = OptionalPagination
 
     def perform_create(self, serializer):
