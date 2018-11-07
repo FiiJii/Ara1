@@ -82,7 +82,7 @@ class BotConfigView(viewsets.ModelViewSet):
         for c in ['eth','btc','usdt']:
             total_count=Currency.objects.filter(status='active',symbol__endswith=c).count()
             bot_count=current_config.currencies.filter(status='active',symbol__endswith=c).count()
-            tdata.append({c:(total_count==bot_count),})
+            tdata.append({"name":c, "active":(total_count==bot_count),})
         return Response(status=status.HTTP_200_OK, data=tdata)
 
     @action(methods=['get', 'post', 'delete'], detail=True)
@@ -109,6 +109,19 @@ class CoinView(viewsets.ModelViewSet):
         if qs.exists():
             raise ValidationError('Coin already exists')
         serializer.save()
+    
+    @action(methods=['post'], detail=False)
+    def activate_parity(self, request):
+        queryset = Currency.objects.filter(status='active')
+        coins = self.queryset.filter(symbol=request.data["symbol"]).count()
+        if not coins:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data="coin not registered")
+        currencies=Currency.objects.filter(status='inactive', symbol__startswith=request.data['symbol'])
+        for currency in currencies:
+            currency.status='active'
+            currency.save() 
+        serializer = CurrencySerializer(queryset, many=True, context={'request': request})        
+        return Response(status=status.HTTP_200_OK, data=serializer.data) 
 
 
 class CurrencyView(viewsets.ModelViewSet):
