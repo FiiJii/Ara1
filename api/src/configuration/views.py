@@ -52,24 +52,27 @@ class BotConfigView(viewsets.ModelViewSet):
 
     def add_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-        qs=Currency.objects.filter(status='active')
-        if request.data['symbol'] not in ['eth','usd','btc']:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.data)
-        qs=qs.filter(symbol__endswith=request.data['symbol'])
-        for currency in qs:
-            current_config.currencies.add(currency)
-        current_config.save()
+        coins = request.data['symbol'].split(',')
+        for coin in coins:
+            if coin not in ['eth','usdt','btc']:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data="symbol not allowed")
+            qs=Currency.objects.filter(status='active', symbol__endswith=coin)
+            for currency in qs:
+                current_config.currencies.add(currency)
+            current_config.save()
         serializer = BotConfigSerializer(current_config, context={'request': request})        
         return Response(status=status.HTTP_201_CREATED, data=serializer.data)
     
     def delete_coins(self, request, pk=None):
         current_config = BotConfig.objects.get(pk=pk)
-        if request.data['symbol'] not in ['eth','usd','btc']:
-            return Response(status=status.HTTP_400_BAD_REQUEST, data=serializer.data)
-        qs=Currency.objects.filter(status='active')
-        qs=qs.filter(symbol__endswith=request.data['symbol'])
-        for currency in qs:
-            current_config.currencies.remove(currency)
+        coins = request.data['symbol'].split(',')
+        for coin in coins:
+            if coin not in ['eth','usdt','btc']:
+                return Response(status=status.HTTP_400_BAD_REQUEST, data="symbol not allowed")
+            qs=Currency.objects.filter(status='active', symbol__endswith=coin)
+            for currency in qs:
+                current_config.currencies.remove(currency)
+            current_config.save()
         serializer = BotConfigSerializer(current_config, context={'request': request})        
         return Response(status=status.HTTP_204_NO_CONTENT, data=serializer.data)
     
@@ -89,8 +92,6 @@ class BotConfigView(viewsets.ModelViewSet):
                  "GET":lambda: self.list_pair(request,pk)}
         return methods[request.method]()
 
-
-
     @action(methods=['get', 'post', 'delete'], detail=True)
     def coins(self, request, pk=None):
         methods={"POST":lambda: self.add_coins(request,pk),
@@ -102,6 +103,12 @@ class CoinView(viewsets.ModelViewSet):
     queryset = Coin.objects.all()
     serializer_class = CoinSerializer
     pagination_class = OptionalPagination
+
+    def perform_create(self, serializer):
+        qs = self.queryset.filter(symbol=self.request.data['symbol'])
+        if qs.exists():
+            raise ValidationError('Coin already exists')
+        serializer.save()
 
 
 class CurrencyView(viewsets.ModelViewSet):
