@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'transactions',
     'configuration',
-    'users'
+    'users',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

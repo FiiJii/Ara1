@@ -7,3 +7,6 @@ djangorestframework_simplejwt
 requests
 Faker
 python-dateutil
+django-extensions
+graphviz
+pydot
